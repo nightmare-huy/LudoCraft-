@@ -1,18 +1,23 @@
-"""Side-by-side crops from actual Punchy game frames; no retouching of the rendered item."""
+"""Compare the published 1.5.3 frame against genuine vanilla and dev-candidate Punchy frames."""
 from pathlib import Path
+import os
 from PIL import Image, ImageDraw, ImageFont
 root = Path(__file__).resolve().parents[1] / 'docs/previews/punchy-grip-review'
+previous = Path(__file__).resolve().parents[1] / 'docs/previews/v1.5.3/punchy/punchy-after-first-right.png'
 f=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',24)
 small=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',20)
 sheet=Image.new('RGB',(1520,1720),'#151c27');d=ImageDraw.Draw(sheet)
-d.text((22,16),'Сверка с обычной алмазной киркой · Punchy 3.2b',font=f,fill='#f3d591')
-d.text((22,51),'Референс и новый тест используют настройки Punchy и игровые кадры.',font=small,fill='#c6d2e3')
-rows=[('vanilla-reference','Алмазная кирка — референс'),('released','LudoCraft 1.5.3 — прежняя поза'),('match-diamond-size','LudoCraft — та же точка хвата, масштаб 75%'),('match-diamond-size-left','Новый вариант, левая рука')]
-for i,(name,label) in enumerate(rows):
+d.text((22,16),'Сверка хвата с алмазной киркой · Punchy 3.2b',font=f,fill='#f3d591')
+d.text((22,51),'Настройки стандартные; реальные кадры из игрового клиента, не макеты.',font=small,fill='#c6d2e3')
+frames=[('punchy-grip-vanilla-reference.png','Алмазная кирка — эталон',False),
+        (previous,'LudoCraft 1.5.3 — опубликованная поза',False),
+        ('punchy-grip-match-diamond-size.png','Новая проба: тот же угол, 75%, сдвиг к ладони',False),
+        ('punchy-grip-match-diamond-size-left.png','Проверка той же позы левой руки',True)]
+for i,(filename,label,left) in enumerate(frames):
  x=i%2*760;y=95+i//2*790
  d.text((x+12,y),label,font=f,fill='white')
- im=Image.open(root/f'punchy-grip-{name}.png').convert('RGB')
- crop=im.crop((580,160,960,540))
+ im=Image.open(filename if isinstance(filename,Path) else root/filename).convert('RGB')
+ crop=im.crop((0 if left else 580,160,380 if left else 960,540))
  sheet.paste(crop.resize((760,760),Image.Resampling.NEAREST),(x,y+32))
-d.text((22,1690),'Пока это только тестовый кадр: опубликованный JAR не изменён.',font=small,fill='#c6d2e3')
+d.text((22,1690),'Тестовый кандидат: размер/угол/сдвиг изменены только для первого лица; JAR 1.5.3 не тронут.',font=small,fill='#c6d2e3')
 sheet.save(root/'grip-review.png')
