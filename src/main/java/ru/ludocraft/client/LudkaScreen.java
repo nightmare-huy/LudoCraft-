@@ -60,7 +60,8 @@ public final class LudkaScreen extends AbstractContainerScreen<LudkaMenu> {
                         minecraft.gameMode.handleInventoryButtonClick(menu.containerId, LudkaMenu.START_BUTTON);
                     }
                 }, () -> true));
-        upgrade.setTooltip(Tooltip.create(tr("contents_warning")));
+        upgrade.setTooltip(Tooltip.create(tr(ru.ludocraft.gameplay.LudkaBalanceProfile.evolutionEnabled()
+                ? "evolution_warning" : "contents_warning")));
         search = addCatalogueWidget(new EditBox(font, leftPos + 12, topPos + 31, 276, 18, tr("search")));
         search.setMaxLength(128);
         search.setHint(tr("search"));
@@ -94,7 +95,7 @@ public final class LudkaScreen extends AbstractContainerScreen<LudkaMenu> {
         List<Entry> all = new ArrayList<>();
         for (var item : BuiltInRegistries.ITEM) {
             ItemStack stack = item.getDefaultInstance().copyWithCount(1);
-            if (!LudkaCompatibility.accepts(stack, minecraft.level)) continue;
+            if (!LudkaCompatibility.acceptsTarget(stack, minecraft.level)) continue;
             var id = BuiltInRegistries.ITEM.getKey(item);
             int value = LudkaValues.base(stack);
             all.add(new Entry(id, stack, value, LudkaRules.rarity(value),
@@ -242,7 +243,8 @@ public final class LudkaScreen extends AbstractContainerScreen<LudkaMenu> {
         int x = leftPos, y = topPos;
         frame(g, x, y, imageWidth, imageHeight, NEON, BG);
         g.fill(x + 1, y + 1, x + 299, y + 25, 0xFF211C30);
-        g.drawCenteredString(font, title, x + 150, y + 8, GOLD);
+        g.drawCenteredString(font, ru.ludocraft.gameplay.LudkaBalanceProfile.evolutionEnabled()
+                ? tr("evolution_title") : title, x + 150, y + 8, GOLD);
         g.drawString(font, tr("input"), x + 16, y + 27, 0xFFADA8BF, false);
         g.drawString(font, tr("output"), x + 250, y + 27, 0xFFADA8BF, false);
         frame(g, x + 22, y + 36, 20, 20, NEON, 0xFF0E0E14);

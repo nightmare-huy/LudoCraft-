@@ -18,7 +18,8 @@ public record SelectLudkaTarget(int containerId, ResourceLocation item) implemen
     @Override public Type<SelectLudkaTarget> type() { return TYPE; }
 
     public static void register(RegisterPayloadHandlersEvent event) {
-        event.registrar("1.3").playToServer(TYPE, CODEC, (payload, context) -> {
+        // Same wire fields, but 1.5 clients must understand synced balance profiles/target restrictions.
+        event.registrar("1.5").playToServer(TYPE, CODEC, (payload, context) -> {
             // NeoForge dispatches this handler on the server main thread.
             if (context.player().containerMenu instanceof LudkaMenu menu && menu.containerId == payload.containerId()) {
                 menu.selectTarget(context.player(), payload.item());

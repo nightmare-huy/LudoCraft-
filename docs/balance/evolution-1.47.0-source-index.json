@@ -1,0 +1,381 @@
+{
+  "pack_id": 125,
+  "version_id": 100598,
+  "version": "1.47.0",
+  "manifest": "https://api.feed-the-beast.com/v1/modpacks/public/modpack/125/100598",
+  "note": "Selected mod filenames and KubeJS script index from official manifest. An index is not a claim that every script was reviewed.",
+  "selected_mods": [
+    "AE2-Things-1.4.2-beta.jar",
+    "AE2NetworkAnalyzer-1.21-2.1.5-neoforge.jar",
+    "extended-industrialization-1.16.5-1.21.1.jar",
+    "integratedmekanism-1.21.1-neoforge-1.2.0.jar",
+    "refinedstorage-mekanism-integration-1.2.0.jar",
+    "HostileNeuralNetworks-1.21.1-6.5.1.jar",
+    "create_mekanism_compat-0.1.21.jar",
+    "ftb-auxilium-neoforge-21.1.6.jar",
+    "ftb-backups-3-21.1.5.jar",
+    "ftb-chunks-neoforge-2101.1.23.jar",
+    "ftb-essentials-neoforge-2101.1.10.jar",
+    "ftb-evolution-companion-21.1.1.jar",
+    "JustEnoughMekanismMultiblocks-1.21.1-7.23.jar",
+    "ftb-ez-crystals-21.1.1.jar",
+    "ftb-filter-system-neoforge-21.1.4.jar",
+    "ftb-jei-extras-21.1.7.jar",
+    "ftb-library-neoforge-2101.1.39.jar",
+    "ftb-materials-21.1.4.jar",
+    "ftb-obsidian-21.1.1.jar",
+    "Mekanism-1.21.1-10.7.19.85.jar",
+    "ftb-pack-companion-21.1.23.jar",
+    "MekanismAdditions-1.21.1-10.7.19.85.jar",
+    "ftb-pause-menu-api-21.1.3.jar",
+    "MekanismGenerators-1.21.1-10.7.19.85.jar",
+    "ftb-promoter-21.1.63.jar",
+    "MekanismTools-1.21.1-10.7.19.85.jar",
+    "ftb-quests-neoforge-2101.1.38.jar",
+    "ftb-ranks-neoforge-2101.1.5.jar",
+    "Modern-Industrialization-2.5.12.jar",
+    "ftb-teams-neoforge-2101.1.12.jar",
+    "ftb-ultimine-neoforge-2101.1.15.jar",
+    "kubejs-mekanism-neoforge-2101.1.7-build.18.jar",
+    "ftb-xmod-compat-neoforge-21.1.14.jar",
+    "ae2-draconic-fusion-autocrafter-neoforge-mc1.21.1-0.1.7.jar",
+    "ae2ct-1.21.1-1.1.1.jar",
+    "MysticalAgradditions-1.21.1-8.0.15.jar",
+    "ae2helpers-1.0.1.jar",
+    "MysticalAgriculture-1.21.1-8.0.29.jar",
+    "ae2jeiintegration-1.2.1.jar",
+    "MysticalAutomation-1.21.1-1.0.8.jar",
+    "ae2labeledpatterns-1.0.5.jar",
+    "Draconic-Evolution-1.21.1-3.1.4.633.jar",
+    "MysticalCustomization-1.21.1-6.0.2.jar",
+    "ae2utility-1.8.0.jar",
+    "ae2wtlib-19.5.1.jar",
+    "productivebees-1.21.1-13.14.0.jar",
+    "productivetrees-1.21.1-1.1.1.jar",
+    "alltheleaks-1.1.14-1.21.1-neoforge.jar",
+    "ExtendedAE-1.21-2.2.43-neoforge.jar",
+    "megacells-4.11.0.jar",
+    "mekanism_lasers-1.1.10.3-a.jar",
+    "PackagedDraconic-1.21.1-4.0.0.1.jar",
+    "industrial-foregoing-souls-1.21.1-1.10.7.jar",
+    "mekanism_turrets-2.2.4.jar",
+    "industrialforegoing-1.21-3.6.39.jar",
+    "mekanism_unleashed-0.3.4.jar",
+    "industrialization_overdrive-1.14.0+1.21.1.jar",
+    "mekanismcovers-1.3-BETA+1.21.jar"
+  ],
+  "scripts": [
+    {
+      "path": "./kubejs/server_scripts/commands/admin_commands.js",
+      "url": "https://files.feed-the-beast.com/blob/a0/a0d72f1cb0c6f22d04d91917728cabf6b11131cf1eb664c46a5633e3fc3d7474.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/event_handlers/entity/harder_mobs.js",
+      "url": "https://files.feed-the-beast.com/blob/7e/7ef00c08c9ccbea6209dc0338547d04f83f70908e17fc8edf00f83122b43703e.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/init/classes/java_classes.js",
+      "url": "https://files.feed-the-beast.com/blob/92/92203202a552a420b363beea0678a1f1eb0d3d092f553b7e12b78e9e2625f244.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/init/functions_utils/utils.js",
+      "url": "https://files.feed-the-beast.com/blob/a0/a07e75c2cc49558fe1674e8084f9bc10d026b6e28961b351484e638118c1c363.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/loot_modification/loot_removals.js",
+      "url": "https://files.feed-the-beast.com/blob/7d/7d888ef169bf89c3184d799b997bf1c3304e281325f14e81a620305e163e3ace.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/misc/compostables.js",
+      "url": "https://files.feed-the-beast.com/blob/0e/0e49efcb55e811b1522cd379ea8b62d22514cf11c064b38e18b5be5d75406efb.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/misc/tooltips.js",
+      "url": "https://files.feed-the-beast.com/blob/36/36919694a2b9f3d1bf41b17c87123eca9c16cd213f9806b418f6766cabce3623.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/misc/villager_trades.js",
+      "url": "https://files.feed-the-beast.com/blob/20/2088e2055bbec0383a4e89a112a0aec07ab3bb4c415a68a0f31d133f9d25a201.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/additions/general_additions.js",
+      "url": "https://files.feed-the-beast.com/blob/c8/c8373c953f2462e1ccc814c3bb03f3e5e2441da4430e67b5e2e91f9a1859f32c.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/additions/pyramid.js",
+      "url": "https://files.feed-the-beast.com/blob/91/91956bfdc0f83adcc7a0d5f3c202d8a603529071bdd734999d844cb9e59688f5.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/aa.js",
+      "url": "https://files.feed-the-beast.com/blob/99/992c231cff24e3270ce0988585b2c10e414c23734c97f81b18efc0bbcdce1f7a.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/ae2.js",
+      "url": "https://files.feed-the-beast.com/blob/d5/d58ffb457037aaf8a329ee68048cec9a5b012db87afe4e72fdc73d5d003eae98.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/ae2_cables.js",
+      "url": "https://files.feed-the-beast.com/blob/44/44c856153c37cd54298254cd16f7e40b6098c6b08d6db382f8680ad45d1d17f4.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/ars_nouveau.js",
+      "url": "https://files.feed-the-beast.com/blob/c3/c32ac619e843080bd4596c65d5c52638dcc261329f968db0cec8795509e5e03e.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/atm.js",
+      "url": "https://files.feed-the-beast.com/blob/d6/d6c7e4e38ec53e1dfa8f2adc100a877718dd5d4c4eabd75031df910f1cabefa5.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/chisel_reborn.js",
+      "url": "https://files.feed-the-beast.com/blob/27/27b6bd88c40add3f5313d393c6803ae75050e83908b616eede67382cda32ff47.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/comforts.js",
+      "url": "https://files.feed-the-beast.com/blob/8b/8b5dbf57d04353036283a3b134c2c0c83f8af883be2a0049498b3f3625244c4f.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/compressable_blocks.js",
+      "url": "https://files.feed-the-beast.com/blob/40/401d190d688c9824540e4a6e9ce1a83190f4e568ed43ccc680ee7f0ece6b9bd8.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/connected_glass.js",
+      "url": "https://files.feed-the-beast.com/blob/b8/b863bf46af59e2d015f6404a4ef2641d127f976046284d82c263763c791ecc89.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/create.js",
+      "url": "https://files.feed-the-beast.com/blob/14/1442fca44666de1b54d635efa9983e4af0d7762ba149326625d55a5185d5b5ca.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/crop_to_seed.js",
+      "url": "https://files.feed-the-beast.com/blob/4e/4e81cf1a51feb4e012d417714dc6e17d9779fce58c981c414f20216d1df33e40.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/draconic_evolution.js",
+      "url": "https://files.feed-the-beast.com/blob/4f/4fe97893e42f4e93e33b64e9a1e14f8e700a364a47468c2b9ef45709eabd5101.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/enderio.js",
+      "url": "https://files.feed-the-beast.com/blob/b6/b694c1fcd55dd40f651da81953eeb52f252c4e2a210a1d04d277b1771954c6ef.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/eternal_starlight.js",
+      "url": "https://files.feed-the-beast.com/blob/81/81e09103a55d9aeda438986b77f4cda1cf39e94903798d307e57feb5125fd0c3.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/forbidden_arcanus.js",
+      "url": "https://files.feed-the-beast.com/blob/60/60c0202d3953dd8796d9b6753ec9411eda633f62a4529a063af70a9512fc1572.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/ftb.js",
+      "url": "https://files.feed-the-beast.com/blob/52/52c331d033f870857cf2dad052646247ceb6eae27052f7ecae1051b2a67e7838.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/functional_storage.js",
+      "url": "https://files.feed-the-beast.com/blob/1f/1fdcdf431035bed6151bb7a1783f03102c9954525a2d5904e2b10b6d40aa59f7.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/geore.js",
+      "url": "https://files.feed-the-beast.com/blob/83/833b21b81f893337f5ec5a583240cd8f99991cfc19c1d594dac3b2c99a6d7ab2.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/glassential.js",
+      "url": "https://files.feed-the-beast.com/blob/df/dfbb619548c1b319afbcb37a28cb3eec2b14330510f34424ce398c791b3e71bc.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/handcrafted.js",
+      "url": "https://files.feed-the-beast.com/blob/9a/9a444258fe8ee885592520c0ff34a706470dc30f0d87c4fc0df1d17212a2effd.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/immersive_engineering.js",
+      "url": "https://files.feed-the-beast.com/blob/10/1085c1299d9689b4976c9fc4dd1305c7e445239bfe30df443d228eb718ab3d29.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/immersive_garden_cloche.js",
+      "url": "https://files.feed-the-beast.com/blob/56/56c2aeafa16e6685c4708545e767042c63c048a542b565772a345a0fd3b46c0b.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/industrial_foregoing.js",
+      "url": "https://files.feed-the-beast.com/blob/f2/f2ef1f114c3e7197775cb956c540bba8fcb0d52597f0606a0071965da3fa0a64.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/integrated_dynamics.js",
+      "url": "https://files.feed-the-beast.com/blob/ee/ee6dc1f3efb93fc9f5b0ea1be16f61ba204977016f06720cab920d8e2d5e6de9.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/jamd.js",
+      "url": "https://files.feed-the-beast.com/blob/30/309dcddd083e8d45acc414ad253463846f40841c6199c4a3519126fc5c83a090.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/justdirethings.js",
+      "url": "https://files.feed-the-beast.com/blob/00/00c47b0b812170ea8dfc1aa1a9e15425d24acbab642b2789d7e8d592aea8f4e2.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/malum.js",
+      "url": "https://files.feed-the-beast.com/blob/21/21154c959e6981968f95d31d753e665b75199c9dd7ef26184b3d81db2c5e58c4.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/mekanism.js",
+      "url": "https://files.feed-the-beast.com/blob/4a/4add0d08709c12cf1d191fed26705cd5d70458d2c22bf466ac977e055711addc.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/modern_industrialization.js",
+      "url": "https://files.feed-the-beast.com/blob/3b/3b23c6aadfb3ad2ff7a1c512402b075edbefa61c3efa290b5803237d7220f991.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/morered.js",
+      "url": "https://files.feed-the-beast.com/blob/91/91e32c1a83a38993bc5c66bc32f03d582786328121b20ed908943b12b79bf6ed.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/mysticalagriculture.js",
+      "url": "https://files.feed-the-beast.com/blob/26/267ee55f0482ec8fb40848849ad6a31cc13385bab69d450c8aad9efcf9095836.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/nautec.js",
+      "url": "https://files.feed-the-beast.com/blob/de/de1497e47b59e1ddc4c95c9bf6225bfaf6d2bc2a050d09e8e4c3b806588064d1.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/occultism.js",
+      "url": "https://files.feed-the-beast.com/blob/1f/1feeabd8def66d6c2ccfc21222e882a76fc8a5ec18ad978b757e3b84e9101a6d.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/oh_the_scripts_weve_went.js",
+      "url": "https://files.feed-the-beast.com/blob/c7/c7162ea82484878c22a882be629eec6f5ae053956473b81a7b3c0e1e8065fd1a.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/oritech.js",
+      "url": "https://files.feed-the-beast.com/blob/0b/0b669b0048f0eb54300590ce42f2012bd14c664c3300fe3e293808a6fe279636.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/pagansbless.js",
+      "url": "https://files.feed-the-beast.com/blob/1c/1cefac041ba6256f65d147566d03b75bbf3e5c5efdf554f14fff51b214511b53.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/pnc.js",
+      "url": "https://files.feed-the-beast.com/blob/bc/bcc2a799048a595f1bcb134af4eb39789281de4d8f179e97b9f053934e39b2dd.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/powah.js",
+      "url": "https://files.feed-the-beast.com/blob/73/73d814ce78cb4d75f4577a398a142b80a095fc5d600fec9b7ae3ade3605748ed.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/productive_bees.js",
+      "url": "https://files.feed-the-beast.com/blob/a7/a771d3cf9ed33eb4a459e09c29fac0afe6be5ed155e26d33d2638fde608d7ecd.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/productive_trees.js",
+      "url": "https://files.feed-the-beast.com/blob/bb/bbce6facd77dc2b8e6d62df5fd2f6ee30464b9a5f04804eeb88e37d25f47bd53.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/refined_storage.js",
+      "url": "https://files.feed-the-beast.com/blob/f6/f69bbe8ab76bd7b0ac4f5d717bd5406da8bd8b52f61af409ba09330a5546fecb.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/rftools.js",
+      "url": "https://files.feed-the-beast.com/blob/f0/f0a8fe32062abbc8c9ce3e2cef4d590cb13e0c418cb3e52a2aa8678ae0a053b8.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/silentgear.js",
+      "url": "https://files.feed-the-beast.com/blob/84/84b9ebc56a430dc18860dee5c3dab83d9455bdbf5b7b2a0ea4146d3ac4788ab2.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/simulated.js",
+      "url": "https://files.feed-the-beast.com/blob/4e/4e09c93123f63c9d94489f2dc9672cd2b127319a5772f0957a3251427d075faf.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/supplementaries.js",
+      "url": "https://files.feed-the-beast.com/blob/f1/f18bebae4f2f785bc96729d531384ecd5d8a23b398dcef6259fa922afdfe9a1f.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/the_bumblezone.js",
+      "url": "https://files.feed-the-beast.com/blob/a7/a7e6fe73386913186bc0fb6c03f2ff33b23a21fde7498794ce14404b473c99ec.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/utilitarian.js",
+      "url": "https://files.feed-the-beast.com/blob/68/68e566e8326517c107453347a18ee0c56dfd5b63d6b6884fa6f5b4919b822330.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/vanilla.js",
+      "url": "https://files.feed-the-beast.com/blob/09/09ab33271063b9f88a70ea8314a04a48cfe76427a33a86fece3b8ccd3b65cc03.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/vanillabackport.js",
+      "url": "https://files.feed-the-beast.com/blob/42/42f3e74915c7d75fa47e4df9e21737fc50bce729a6519527f0f193ef94577f24.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/xycraft.js",
+      "url": "https://files.feed-the-beast.com/blob/b6/b669d9a29dc3f035df0456f99fa3ae475dcc9e1323c1eefaba3a0448feba0894.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/mods/yungsbetterstrongholds.js",
+      "url": "https://files.feed-the-beast.com/blob/b5/b5849ce42dc7e93e0753d41c01c035a30a99b7d969b712b89e964af023382703.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/removals/removals.js",
+      "url": "https://files.feed-the-beast.com/blob/03/03004c537fee31e20b504c7c0e0f8946ebe0aeb39ea02d14b435909cbe772552.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/unification/duplicate_removals.js",
+      "url": "https://files.feed-the-beast.com/blob/c6/c6bd364213064e2972b7d055c173064f8b31c04f7fef15eeeffc803eed491e45.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/unification/ftbmaterials.js",
+      "url": "https://files.feed-the-beast.com/blob/c4/c4ab85ba473d718a09bf91ad18ea0f549d92f5c6fa3c30bb79db3eb3275f1518.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/recipes/unification/general.js",
+      "url": "https://files.feed-the-beast.com/blob/59/59b8302ca45b4576b7ac6a22330924c2e627d4dc5a79e9c847b366028d067cb3.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/systems/music.js",
+      "url": "https://files.feed-the-beast.com/blob/ff/ff546ab662b8213362839edd8bdcc0f5311b154d5838390924c9be6b0be62eee.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/systems/pyramid.js",
+      "url": "https://files.feed-the-beast.com/blob/fc/fc777422ce575497e2ad668e8aa0c729b6b868937414eb7d20f519e24aeb5eed.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/systems/ranks.js",
+      "url": "https://files.feed-the-beast.com/blob/0a/0a199683240f2733becf3bd72d054234a1735a580494566a4b5a4533ec0726a7.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/tags/items.js",
+      "url": "https://files.feed-the-beast.com/blob/fd/fd3d3e970270c9b78a1c3a6990c4d05fb2122e5619950d49a08abfd4a3c8c4f1.js"
+    },
+    {
+      "path": "./kubejs/server_scripts/tags/main_tags.js",
+      "url": "https://files.feed-the-beast.com/blob/f5/f5be90ee50b7ddc4b5702e5a26e87e41a91c9d5fdc5852d91c85739ea73bb30a.js"
+    },
+    {
+      "path": "./kubejs/startup_scripts/01_custom_blocks.js",
+      "url": "https://files.feed-the-beast.com/blob/56/565d984b513274b5e949e6bcd5df77ce452c67e2b1376c3abf350889aeff25f5.js"
+    },
+    {
+      "path": "./kubejs/startup_scripts/02_custom_items.js",
+      "url": "https://files.feed-the-beast.com/blob/98/9821c500fcbc147ef4f1d4b8fcb962d13fa4c4e7aa5a9dc210e0b4ab29b72aaf.js"
+    },
+    {
+      "path": "./kubejs/startup_scripts/03_sound_registry.js",
+      "url": "https://files.feed-the-beast.com/blob/1f/1fe9353600851fbd1a6abd6f596d819d7b782d9778997d7725ecd900609027b3.js"
+    },
+    {
+      "path": "./kubejs/startup_scripts/04_custom_fluids.js",
+      "url": "https://files.feed-the-beast.com/blob/54/5444f5da62d368315befbc3b20f731bd419632c55d70f13271c0a8b6a75605a8.js"
+    },
+    {
+      "path": "./kubejs/startup_scripts/04_globals.js",
+      "url": "https://files.feed-the-beast.com/blob/75/75f861d37bd0ef49b5391d403bc444d130cf8934c0971395d230aac3f27bd7d8.js"
+    },
+    {
+      "path": "./kubejs/startup_scripts/05_itemmodifications.js",
+      "url": "https://files.feed-the-beast.com/blob/6f/6fb784359a083e7c0c36e29e343139e6e2fedde74d189b83b30ebe2b059a9af9.js"
+    },
+    {
+      "path": "./kubejs/startup_scripts/06_magic_spells.js",
+      "url": "https://files.feed-the-beast.com/blob/76/7636702c5bdd32aaca2437dd2321e3fc70f2460090282b3c1d9734cbf6bfc948.js"
+    },
+    {
+      "path": "./kubejs/startup_scripts/07_custom_gases.js",
+      "url": "https://files.feed-the-beast.com/blob/d7/d771b1c72d48843db8015fb7290654b56ba2d3b29ac60bd304732333a5c8f820.js"
+    }
+  ]
+}

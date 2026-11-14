@@ -27,7 +27,7 @@ jobs:
       - name: Build and test
         shell: bash
         run: |
-          if ! ./gradlew build runGameTestServer --no-daemon > build-output.log 2>&1; then
+          if ! ./gradlew build runGameTestServer runEvolutionGameTestServer --no-daemon > build-output.log 2>&1; then
             tail -80 build-output.log
             while IFS= read -r line; do
               line="${line//'%'/'%25'}"
@@ -39,7 +39,9 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: ludocraft-1.21.1
-          path: build/libs/ludocraft-${{ steps.version.outputs.version }}.jar
+          path: |
+            build/libs/ludocraft-${{ steps.version.outputs.version }}.jar
+            build/libs/ludocraft-${{ steps.version.outputs.version }}-ftb-evolution-1.47.0.zip
           if-no-files-found: error
 
   release:
@@ -77,7 +79,9 @@ jobs:
           fi
           jar="ludocraft-${VERSION}.jar"
           test -s "release/$jar"
-          (cd release && sha256sum "$jar" > SHA256SUMS.txt)
+          preset="ludocraft-${VERSION}-ftb-evolution-1.47.0.zip"
+          test -s "release/$preset"
+          (cd release && sha256sum "$jar" "$preset" > SHA256SUMS.txt)
           cat > release/notes.md <<'NOTES'
           ## LudoCraft — Кирка Лудомании и Карманная Лудка
 
@@ -90,17 +94,19 @@ jobs:
 
           Алмазная кирка: 85% — без предметов и опыта, 15% — дроп ×2–×5, звук «777», конфетти и визуальные фейерверки.
 
-          Карманная Лудка 1.4.0: выберите желаемый предмет в каталоге Minecraft и установленных модов. Поиск по названию/ID, фильтры редкости, страницы. Шанс автоматически рассчитывается сервером по ценности ОДНОГО предмета ставки и цели, от 0.0015% до 95% при стандартных оценках.
+          Карманная Лудка 1.5.0: опциональный консервативный профиль FTB Evolution 1.47.0. Обычный режим 1.4.0 сохранён, профиль НЕ включается автоматически.
 
-          Земля (1), алмаз (128) и незеритовый слиток (2048) неравноценны. Земля → незерит: 0.0244%, алмаз → незерит: 3.1250%. Пять категорий редкости, оценки модовых предметов и теги датапака для переоценки. Разрешены все обычные типы предметов; технические блоки и blacklist исключены.
+          Установка профиля: ZIP `ludocraft-*-ftb-evolution-1.47.0.zip` целиком в `<мир>/datapacks/` (на сервере — в папку серверного мира), затем `/reload` и заново открыть Лудку. В заголовке появится EVOLUTION 1.47.0. ZIP не класть в mods и не распаковывать внутрь другого datapack.
 
-          Новые профили оценок: AllTheOres, AllTheModium, Mekanism (+ Generators/Tools), Ender IO, AE2, MEGACells, ExtendedAE, Applied Mekanistics и AdvancedAE. Материалы/формы, процессоры, уровни машин и ёмкости ячеек имеют разные оценки. Общие c:-теги расширяют поддержку других модов; датапак имеет высший приоритет. Creative/debug-предметы известных модов и неработоспособные стандартные Ender IO conduit/loot capacitor исключены.
+          Проверены официальные manifest 125/100598 и отдельные KubeJS-скрипты 1.47.0. FTB Materials и эквивалентные ресурсы оценены согласованно. Пример: алмаз 32, незерит 512, AE2 controller 2048, item cell 1k 640. Неоценённые модовые вещи: ставка не более 32, награда не менее 512; это намеренный разрыв, а не одинаковая цена покупки/ставки.
 
-          Победа выдаёт ровно один выбранный предмет в стандартном состоянии. Трёхсекундная рулетка сохранена. При проигрыше ставка сгорает; остальной стак остаётся. Иконки в каталоге не являются инвентарными слотами и не выдают предметы по клику.
+          Защищённые цели: скрытые c:hidden_from_recipe_viewers, руды/сырьё, compressedblocks, непроверенные кастомные ftbevolution-предметы (кроме ruby_gem/xy_aluminum_dust), chaos-компоненты Draconic Evolution, антиматерия Mekanism и nucleosynthesizer, creative_* / *_creative. Как ставки они разрешены, если не запрещены общим blacklist. Профиль не отслеживает персональный прогресс и не гарантирует закрытие всех обходов рецептов. MEGACells упирается в потолок цены 32767.
 
-          Собрано Gradle на Java 21. Пройдены проверки вероятностей/анимации и серверные GameTests. Профили проверены чистыми Java-тестами; GameTests запускаются без сторонних модов. Совместный запуск перечисленных модов, GUI и звук в клиенте пока не проверены. Ячейки выигрываются в стандартном состоянии; содержимое и энергия ставки не копируются и не повышают оценку.
+          Сервер выбирает исход, расходуется один предмет. Победа создаёт один стандартный экземпляр цели, не копируя содержимое/заряд ставки. Кирка 85/15 и трёхсекундная анимация не изменены.
+
+          CI: чистые тесты правил, обычный GameTest-сервер и отдельный GameTest-сервер с настоящим datapack-профилем. Полная FTB Evolution и клиент GUI в CI не запускаются. Это первый экспериментальный баланс, не полный аудит экономики сборки. Документация: docs/balance/ftb-evolution-1.47.0.md.
           NOTES
-          gh release create "$tag" "release/$jar" release/SHA256SUMS.txt \
+          gh release create "$tag" "release/$jar" "release/$preset" release/SHA256SUMS.txt \
             --repo "$GH_REPO" --target "$GITHUB_SHA" \
             --title "LudoCraft ${VERSION} — Minecraft 1.21.1" \
             --notes-file release/notes.md

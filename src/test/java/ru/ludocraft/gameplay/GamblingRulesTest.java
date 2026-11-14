@@ -7,6 +7,7 @@ public final class GamblingRulesTest {
     public static void main(String[] args) {
         LudkaRulesTest.run();
         LudkaModValuesTest.run();
+        LudkaEvolutionValuesTest.run();
         everyLosingRollUsesOnlyOneRandomDraw();
         exhaustivelyChecksAllWinningRollsAndMultipliers();
         fallbackMatchesOreWordsButNotUnrelatedBlocks();

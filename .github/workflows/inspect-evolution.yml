@@ -1,7 +1,5 @@
 name: Inspect Evolution balance sources
 on:
-  push:
-    paths: ['.github/workflows/inspect-evolution.yml']
   workflow_dispatch:
 permissions:
   contents: read

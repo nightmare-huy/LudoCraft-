@@ -18,4 +18,7 @@ public final class LudkaCompatibility {
     public static boolean accepts(ItemStack stack, Level level) {
         return accepts(stack) && stack.isItemEnabled(level.enabledFeatures());
     }
+    public static boolean acceptsTarget(ItemStack stack, Level level) {
+        return accepts(stack, level) && LudkaBalanceProfile.targetAllowed(stack);
+    }
 }

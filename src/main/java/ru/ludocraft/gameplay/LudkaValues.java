@@ -43,12 +43,25 @@ public final class LudkaValues {
         for (String path : paths) VANILLA.put(path, value);
     }
     public static int base(ItemStack stack) {
+        return estimate(stack, false);
+    }
+    private static int estimate(ItemStack stack, boolean wager) {
         if (stack.isEmpty()) return 0;
         // Explicit pack overrides win; if multiple tags match, the highest value wins.
         for (int i = OVERRIDE_VALUES.length - 1; i >= 0; i--) {
             if (stack.is(OVERRIDES.get(i))) return OVERRIDE_VALUES[i];
         }
         var id = BuiltInRegistries.ITEM.getKey(stack.getItem());
+        boolean evolution = LudkaBalanceProfile.evolutionEnabled();
+        if (evolution) {
+            int quote = LudkaEvolutionValues.lookup(id.getNamespace(), id.getPath());
+            if (quote > 0) return quote;
+            int materialQuote = stack.getTags()
+                    .filter(tag -> tag.location().getNamespace().equals("c"))
+                    .mapToInt(tag -> LudkaEvolutionValues.commonTag(tag.location().getPath()))
+                    .max().orElse(0);
+            if (materialQuote > 0) return materialQuote;
+        }
         if (id.getNamespace().equals("minecraft")) {
             Integer exact = VANILLA.get(id.getPath());
             if (exact != null) return exact;
@@ -85,7 +98,11 @@ public final class LudkaValues {
             case RARE -> 256;
             case EPIC -> 2048;
         };
-        return Math.clamp(Math.max(value, rarityFloor), 1, LudkaRules.MAX_VALUE);
+        int result = Math.clamp(Math.max(value, rarityFloor), 1, LudkaRules.MAX_VALUE);
+        if (evolution && !id.getNamespace().equals("minecraft")) {
+            return LudkaEvolutionValues.fallback(result, wager);
+        }
+        return result;
     }
     private static int materialCount(String path) {
         if (path.endsWith("chestplate")) return 8;
@@ -98,7 +115,7 @@ public final class LudkaValues {
         return 0;
     }
     public static int stake(ItemStack stack) {
-        int value = base(stack);
+        int value = estimate(stack, true);
         if (value > 0 && stack.isDamageableItem()) {
             int durability = Math.max(0, stack.getMaxDamage() - stack.getDamageValue());
             value = Math.max(1, (int) ((long) value * durability / Math.max(1, stack.getMaxDamage())));

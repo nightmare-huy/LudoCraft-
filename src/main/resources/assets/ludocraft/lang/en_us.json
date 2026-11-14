@@ -44,5 +44,7 @@
   "screen.ludocraft.tier_short_3": "Epic",
   "screen.ludocraft.tier_short_4": "Legend",
   "screen.ludocraft.default_prize": "Prize: default item, without the wager’s data.",
-  "screen.ludocraft.contents_warning": "Stored contents, charge and upgrades add no value and are lost with the wager, even on a win. Do not wager filled cells or containers!"
+  "screen.ludocraft.contents_warning": "Stored contents, charge and upgrades add no value and are lost with the wager, even on a win. Do not wager filled cells or containers!",
+  "screen.ludocraft.evolution_title": "LUDKA · EVOLUTION 1.47.0",
+  "screen.ludocraft.evolution_warning": "Evolution: unreviewed mod items wager at most 32, prizes cost at least 512. Progression components, hidden items and ores cannot be prizes. Wager contents are lost even on a win!"
 }

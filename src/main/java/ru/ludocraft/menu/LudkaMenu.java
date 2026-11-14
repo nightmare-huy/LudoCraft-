@@ -113,7 +113,7 @@ public final class LudkaMenu extends AbstractContainerMenu {
                 && (!owner.level().isClientSide || (stakeValue == LudkaValues.stake(storage.getItem(INPUT))
                     && chance == LudkaRules.chance(stakeValue, targetValue)))
                 && LudkaCompatibility.accepts(storage.getItem(INPUT), owner.level())
-                && LudkaCompatibility.accepts(target(), owner.level()) && storage.getItem(OUTPUT).isEmpty();
+                && LudkaCompatibility.acceptsTarget(target(), owner.level()) && storage.getItem(OUTPUT).isEmpty();
     }
     public void beginClientRequest() { if (owner.level().isClientSide) clientPending = true; }
     public void beginSelectionRequest() { if (owner.level().isClientSide) clientSelecting = true; }
@@ -132,7 +132,7 @@ public final class LudkaMenu extends AbstractContainerMenu {
         if (!owns(player)) return false;
         selectionAck = (selectionAck + 1) & 32767;
         boolean valid = !isBusy() && BuiltInRegistries.ITEM.containsKey(id);
-        if (valid) valid = LudkaCompatibility.accepts(BuiltInRegistries.ITEM.get(id).getDefaultInstance(), player.level());
+        if (valid) valid = LudkaCompatibility.acceptsTarget(BuiltInRegistries.ITEM.get(id).getDefaultInstance(), player.level());
         if (valid) {
             targetId = BuiltInRegistries.ITEM.getId(BuiltInRegistries.ITEM.get(id));
             roll = -1;
@@ -151,7 +151,7 @@ public final class LudkaMenu extends AbstractContainerMenu {
         }
         stakeValue = LudkaCompatibility.accepts(input, owner.level()) ? LudkaValues.stake(input) : 0;
         ItemStack prize = target();
-        targetValue = LudkaCompatibility.accepts(prize, owner.level()) ? LudkaValues.base(prize) : 0;
+        targetValue = LudkaCompatibility.acceptsTarget(prize, owner.level()) ? LudkaValues.base(prize) : 0;
         chance = LudkaRules.chance(stakeValue, targetValue);
     }
     @Override

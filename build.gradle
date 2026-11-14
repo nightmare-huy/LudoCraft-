@@ -68,3 +68,29 @@ tasks.named('jar', Jar) {
     exclude 'ru/ludocraft/gametest/**'
     exclude 'data/ludocraft/structure/ludka_test.nbt'
 }
+
+// Exercise the opt-in preset in a separate world and test namespace.
+neoForge.runs {
+    evolutionGameTestServer {
+        type = 'gameTestServer'
+        gameDirectory = project.file('run/evolution')
+        programArguments.addAll('--world', 'profile-test')
+        systemProperty 'neoforge.enabledGameTestNamespaces', 'ludocraft_evolution'
+    }
+}
+tasks.register('prepareEvolutionTestPacks', Copy) {
+    into 'run/evolution/profile-test/datapacks'
+    from('compat/ftb-evolution-1.47.0') { into 'ludocraft-evolution' }
+    from('src/test/evolution-fixture') { into 'ludocraft-test-overrides' }
+}
+tasks.matching { it.name == 'runEvolutionGameTestServer' }.configureEach {
+    dependsOn tasks.named('prepareEvolutionTestPacks')
+    mustRunAfter tasks.named('runGameTestServer')
+}
+tasks.named('jar', Jar) { exclude 'data/ludocraft_evolution/**' }
+tasks.register('evolutionPack', Zip) {
+    from 'compat/ftb-evolution-1.47.0'
+    archiveFileName = "ludocraft-${project.version}-ftb-evolution-1.47.0.zip"
+    destinationDirectory = layout.buildDirectory.dir('libs')
+}
+tasks.named('build') { dependsOn tasks.named('evolutionPack') }
