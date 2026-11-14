@@ -95,6 +95,10 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add "$PREVIEW/punchy" "$PREVIEW/punchy-comparison.png"
+          if git diff --cached --quiet; then
+            echo 'Versioned Punchy evidence is already up to date.'
+            exit 0
+          fi
           git commit -m "Record Punchy 3.2b game evidence for $VERSION [skip ci]"
           git fetch origin arena/70f21d2d-ludocraft
           git rebase origin/arena/70f21d2d-ludocraft
