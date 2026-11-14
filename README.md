@@ -18,6 +18,9 @@
 **[Скачать JAR 1.5.2](https://github.com/nightmare-huy/LudoCraft-/releases/download/v1.5.2/ludocraft-1.5.2.jar)** ·
 **[Игровые снимки до/после и проверки](docs/previews/v1.5.2/README.md)**
 
+[Релизная сборка 43573655547](https://github.com/nightmare-huy/LudoCraft-/actions/runs/43573655547)
+успешна: чистые тесты, 8+2 GameTests, настоящий клиентский мир, семь кадров и проверка JAR.
+
 Замените старый JAR в `mods` клиента и сервера. Уже установленный datapack Evolution
 оставьте: повторно ставить ZIP не требуется. Старый релиз 1.5.1 не перезаписывается.
 
