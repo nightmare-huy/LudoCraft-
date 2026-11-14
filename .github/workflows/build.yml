@@ -104,7 +104,13 @@ jobs:
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add "$DEST"
           git commit -m "Save ${VERSION} premium pickaxe in-game previews [skip ci]"
-          git push origin HEAD:arena/70f21d2d-ludocraft
+          git fetch origin arena/70f21d2d-ludocraft
+          git rebase origin/arena/70f21d2d-ludocraft
+          git push origin HEAD:arena/70f21d2d-ludocraft || {
+            git fetch origin arena/70f21d2d-ludocraft
+            git rebase origin/arena/70f21d2d-ludocraft
+            git push origin HEAD:arena/70f21d2d-ludocraft
+          }
       - name: Preserve failed vanilla client evidence for diagnosis
         if: failure() && github.ref == 'refs/heads/arena/70f21d2d-ludocraft'
         run: |
