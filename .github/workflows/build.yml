@@ -256,8 +256,9 @@ jobs:
 
           Install `ludocraft-${VERSION}.jar` in the `mods` folder on the client and server. The optional FTB Evolution 1.47.0 datapack ZIP is a separate download and is not required for the mod.
 
-          CI on this release runs the vanilla build, GameTests, Evolution preset tests, baked-model checks, and real first-person client captures of both premium pickaxes. The optional Punchy compatibility job is skipped for this run; Punchy compatibility was not tested as part of this release.
+          CI on this release runs the vanilla build, GameTests, Evolution preset tests, baked-model checks, real first-person client captures, and the Punchy 3.2b compatibility test.
           NOTES
+          python3 -c 'import os; from pathlib import Path; p=Path("release/notes.md"); p.write_text(p.read_text().replace("${VERSION}", os.environ["VERSION"]))'
           gh release create "$tag" "release/$jar" "release/$preset" release/SHA256SUMS.txt \
             --repo "$GH_REPO" --target "$GITHUB_SHA" \
             --title "LudoCraft ${VERSION} — Minecraft 1.21.1" \
