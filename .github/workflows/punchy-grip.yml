@@ -41,6 +41,7 @@ jobs:
         run: |
           mkdir -p docs/previews/punchy-grip-review
           cp run/punchy-smoke/screenshots/punchy-grip-*.png docs/previews/punchy-grip-review/
+          cp run/punchy-smoke/screenshots/punchy-grip-profiles.json docs/previews/punchy-grip-review/
           python3 - <<'PY'
           import json,os
           from pathlib import Path

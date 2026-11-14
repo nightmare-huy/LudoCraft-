@@ -30,8 +30,16 @@ public final class PunchyPoseSweep {
             loading = true;
             try {
                 if (baselineRight == null) {
+                    // Snapshot the actual released item-specific profiles, never generic
+                    // Punchy pickaxe defaults from the diamond-reference phase.
+                    ItemStack held = mc.player.getMainHandItem().copy();
+                    mc.player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(LudoCraft.GAMBLERS_PICKAXE.get()));
                     baselineRight = profile(mc, false);
                     baselineLeft = profile(mc, true);
+                    mc.player.setItemInHand(InteractionHand.MAIN_HAND, held);
+                    Files.createDirectories(Path.of("screenshots"));
+                    Files.writeString(Path.of("screenshots", "punchy-grip-profiles.json"),
+                            "{\"releasedRight\":" + baselineRight + ",\"releasedLeft\":" + baselineLeft + "}\\n");
                 }
                 var right = baselineRight.deepCopy();
                 var left = baselineLeft.deepCopy();
