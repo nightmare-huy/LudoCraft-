@@ -48,6 +48,10 @@ jobs:
         run: |
           if ! ./gradlew build runGameTestServer runEvolutionGameTestServer --no-daemon > build-output.log 2>&1; then
             tail -80 build-output.log
+            grep -nE 'error:|symbol:|location:|Exception|FAILED|FAILURE|AssertionError|Missing .*completion|Could not|Invalid' build-output.log | tail -30 | while IFS= read -r line; do
+              line="${line//'%'/'%25'}"
+              echo "::error::Build diagnostic: $line"
+            done
             while IFS= read -r line; do
               line="${line//'%'/'%25'}"
               echo "::error::$line"
