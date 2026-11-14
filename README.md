@@ -223,12 +223,16 @@ GameTests проверяют земля/алмаз/незерит, выдачу 
 ячеек/машин, границы, реальные общие теги и запрет переноса содержимого ставки.
 Сторонние моды в тестовую среду не устанавливаются. Тестовые классы и структура не входят в распространяемый JAR.
 
-**Результат 1.4.0:** `build runGameTestServer` успешно выполнены на Java 21,
-коммит `98f94bea50cc263fdd3be297fae1b38cf084e6bf`. Пройдены тесты вероятностей,
-новых модовых профилей и восемь серверных GameTests **без установки сторонних модов**.
-[Сборка и тесты](https://github.com/nightmare-huy/LudoCraft-/actions/runs/43568174216) ·
-[Скачать ludocraft-1.4.0.jar](https://github.com/nightmare-huy/LudoCraft-/releases/download/v1.4.0/ludocraft-1.4.0.jar) ·
-[Релиз и SHA256SUMS](https://github.com/nightmare-huy/LudoCraft-/releases/tag/v1.4.0).
+**Результат 1.5.0:** релиз собран из `1e3e5f2149232f45f4396a41b1dc8b6a006efd42`,
+[публикация](https://github.com/nightmare-huy/LudoCraft-/actions/runs/43569569803).
+[Повторная проверка с контролем завершения тестов и упаковки](https://github.com/nightmare-huy/LudoCraft-/actions/runs/43569796771)
+подтвердила **8/8 обычных + 2/2 Evolution GameTests**, чистые тесты правил,
+пустой маркер в JAR, активирующий маркер в ZIP и отсутствие тестового кода в релизе.
+Повторный коммит меняет только CI-проверки, исходный JAR не перезаписывался.
+
+**[Скачать JAR 1.5.0](https://github.com/nightmare-huy/LudoCraft-/releases/download/v1.5.0/ludocraft-1.5.0.jar)** ·
+**[Скачать ZIP Evolution 1.47.0](https://github.com/nightmare-huy/LudoCraft-/releases/download/v1.5.0/ludocraft-1.5.0-ftb-evolution-1.47.0.zip)** ·
+[Релиз и SHA256SUMS](https://github.com/nightmare-huy/LudoCraft-/releases/tag/v1.5.0).
 
 **Клиентский GUI вручную в Minecraft ещё не проверен.** Превью в `docs/previews/v1.3.0/`
 явно помечены как макеты по коду, не игровые скриншоты. На конкретном модпаке нужно
@@ -237,7 +241,7 @@ GameTests проверяют земля/алмаз/незерит, выдачу 
 
 ## Публикация и файлы
 
-GitHub Actions выполняет `build runGameTestServer` перед публикацией JAR и SHA256SUMS
+GitHub Actions выполняет `build runGameTestServer runEvolutionGameTestServer` перед публикацией JAR, ZIP профиля и SHA256SUMS
 в Releases. Для следующего релиза увеличьте `mod_version` в `gradle.properties`.
 Существующие релизы не перезаписываются. Визуальные результаты хранятся отдельно в
 `docs/previews/v<версия>/`; эта папка не подключена к Gradle и не входит в мод.

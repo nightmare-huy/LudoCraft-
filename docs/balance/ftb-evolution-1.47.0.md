@@ -145,6 +145,12 @@ portable-версию прибавляется фиксированная цен
 
 Команда: `./gradlew build runGameTestServer runEvolutionGameTestServer`.
 
+**Подтверждено:** [Actions 43569796771](https://github.com/nightmare-huy/LudoCraft-/actions/runs/43569796771)
+успешно завершился: 8/8 обычных и 2/2 профильных GameTests, чистые тесты и проверка
+содержимого JAR/ZIP. [Релиз 1.5.0](https://github.com/nightmare-huy/LudoCraft-/releases/tag/v1.5.0)
+опубликован из коммита `1e3e5f2149232f45f4396a41b1dc8b6a006efd42`; повторная проверка
+не меняла игрового кода и не перезаписывала релиз.
+
 - Чистые Java-тесты: цены/формы, конверсии 1:1, progression guards, fallback ≤32/≥512,
   шансы, граница между 256k и 1m, прежние вероятности/анимация.
 - Обычный GameTest-сервер: восемь прежних тестов без профиля.
