@@ -43,26 +43,9 @@ jobs:
           grep -Fq 'PUNCHY_COMPAT_PASS:' punchy-client.log
           test "$(find run/punchy-smoke/screenshots -name 'punchy-*.png' | wc -l)" -eq 11
           .model-tools/bin/python tools/check_punchy_captures.py
-      - name: Save evidence, not a release
+      - uses: actions/upload-artifact@v4
         if: always()
-        run: |
-          mkdir -p docs/previews/v1.5.3/punchy
-          if test -d run/punchy-smoke/screenshots; then
-            find run/punchy-smoke/screenshots -name 'punchy-*.png' -exec cp '{}' docs/previews/v1.5.3/punchy/ \;
-          fi
-          python3 - <<'PY'
-          import json, os
-          from pathlib import Path
-          Path('docs/previews/v1.5.3/punchy/capture.json').write_text(json.dumps({
-              'source_commit': os.environ['GITHUB_SHA'],
-              'run_url': f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
-              'runtime': 'Minecraft 1.21.1, NeoForge 21.1.265, Punchy 3.2b, fresh default config',
-              'status': 'automated capture; visual review is separate',
-              'mode': 'survival: idle, both hands, F5, attack key mining and recovery'
-          }, indent=2) + '\n')
-          PY
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add docs/previews/v1.5.3/punchy
-          git commit -m 'Record Punchy compatibility investigation [skip ci]'
-          git push origin HEAD:arena/70f21d2d-ludocraft
+        with:
+          name: punchy-3.2b-hand-captures
+          path: run/punchy-smoke/screenshots/punchy-*.png
+          if-no-files-found: warn

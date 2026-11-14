@@ -93,7 +93,8 @@ public final class HandPoseClientTest {
                     server.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
                 });
             }
-            if (!mc.player.getMainHandItem().is(LudoCraft.GAMBLERS_PICKAXE.get())) return;
+            if (!mc.player.getMainHandItem().is(LudoCraft.GAMBLERS_PICKAXE.get()) &&
+                    !(PunchyPoseSweep.enabled() && mc.player.getMainHandItem().is(net.minecraft.world.item.Items.DIAMOND_PICKAXE))) return;
             if (PunchyPoseSweep.enabled()) { PunchyPoseSweep.tick(mc); return; }
             float yaw = phase == 4 ? 90 : phase == 5 ? -35 : 0;
             mc.player.setYRot(yaw); mc.player.yRotO = yaw;
