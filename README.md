@@ -21,6 +21,8 @@ Punchy остаётся необязательным; отдельный рес�
 **[Снимки с Punchy до/после и границы проверки](docs/previews/v1.5.3/README.md)**
 
 Замените старый LudoCraft JAR на клиенте и сервере. Punchy и datapack Evolution оставьте.
+[Релизная проверка 43576611918](https://github.com/nightmare-huy/LudoCraft-/actions/runs/43576611918)
+успешна: клиент с Punchy 3.2b, клиент без него, 8+2 GameTests, чистые тесты и упаковка.
 
 ## 1.5.2 — исправлен вид кирки в руках
 
