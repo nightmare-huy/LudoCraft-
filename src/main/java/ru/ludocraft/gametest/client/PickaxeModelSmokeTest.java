@@ -43,6 +43,8 @@ public final class PickaxeModelSmokeTest {
                 }
             }
             require(directions.size() == 6, "Missing outward face directions");
+            verifyPremiumModel(event, "vip_gamblers_pickaxe", 206);
+            verifyPremiumModel(event, "highroller_pickaxe", 238);
             for (var context : ItemDisplayContext.values()) {
                 if (context == ItemDisplayContext.NONE) continue;
                 var pose = new PoseStack();
@@ -64,6 +66,21 @@ public final class PickaxeModelSmokeTest {
             System.exit(1);
         }
     }
+    private static void verifyPremiumModel(ModelEvent.BakingCompleted event, String name, int expectedQuads) {
+        var id = LudoCraft.id(name);
+        var model = event.getModels().get(ModelResourceLocation.inventory(id));
+        require(model != null && model != event.getModelManager().getMissingModel(), "Missing premium model: " + name);
+        require(model.isGui3d(), "Premium model is not 3D: " + name);
+        require(model.getParticleIcon().contents().name().equals(LudoCraft.id("item/" + name + "_3d")),
+                "Missing premium particle sprite: " + name);
+        var quads = model.getQuads(null, null, RandomSource.create(0));
+        require(quads.size() == expectedQuads, "Wrong baked quad count for " + name + ": " + quads.size());
+        for (var quad : quads) {
+            require(quad.getSprite().contents().name().equals(LudoCraft.id("item/" + name + "_3d")),
+                    "Missing premium face sprite: " + name);
+        }
+    }
+
     private static void require(boolean condition, String message) {
         if (!condition) throw new AssertionError(message);
     }

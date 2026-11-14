@@ -9,6 +9,14 @@
 ## 1.6.0 — VIP и Highroller
 
 Добавлены две огнестойкие кирки для добычи руд:
+
+**VIP Gambler’s Pickaxe — вид от первого лица:**
+
+![VIP Gambler’s Pickaxe в ванильном клиенте Minecraft](docs/previews/v1.6.0/vanilla/vip-firstperson.png)
+
+**Highroller Pickaxe — вид от первого лица:**
+
+![Highroller Pickaxe в ванильном клиенте Minecraft](docs/previews/v1.6.0/vanilla/highroller-firstperson.png)
 - **VIP Gambler’s Pickaxe**: характеристики незеритовой кирки; 75% — без дропа и опыта, 25% — множитель дропа ×3, ×4, ×5, ×6, ×7, ×8 или ×10.
 - **Highroller Pickaxe**: прочность 4096, скорость добычи 12, бонус атаки, зачаровываемость 22 и редкость Epic; 65% — без дропа и опыта, 35% — множитель ×5, ×8, ×10, ×12, ×15 или ×20. Победа сопровождается шестью визуальными салютами; множитель ×15 выдаёт испытание «Мега-джекпот».
 

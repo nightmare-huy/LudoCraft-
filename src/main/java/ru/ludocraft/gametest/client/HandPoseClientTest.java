@@ -34,9 +34,10 @@ public final class HandPoseClientTest {
     private static final String[] SHOTS = PUNCHY ? new String[]{"looking-down", "after-first-right", "after-first-left",
             "after-third-front", "after-third-side", "after-third-left", "after-first-swing",
             "mining-start", "mining-middle", "mining-end", "mining-recovered"} : new String[]{"before-first-right", "after-first-right", "after-first-left",
-            "after-third-front", "after-third-side", "after-third-left", "after-first-swing"};
+            "after-third-front", "after-third-side", "after-third-left", "after-first-swing",
+            "vip-firstperson", "highroller-firstperson"};
     private static boolean baked, started, configured, capture;
-    private static int phase, ticks;
+    private static int phase, ticks, equippedPreviewPhase = -1;
     private static org.joml.Vector3f originalRotation, originalTranslation, originalScale;
     private HandPoseClientTest() {}
     public static void startAfterBake() { baked = true; }
@@ -93,8 +94,28 @@ public final class HandPoseClientTest {
                     server.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
                 });
             }
-            if (!mc.player.getMainHandItem().is(LudoCraft.GAMBLERS_PICKAXE.get()) &&
-                    !(PunchyPoseSweep.enabled() && mc.player.getMainHandItem().is(net.minecraft.world.item.Items.DIAMOND_PICKAXE))) return;
+            if (!PUNCHY && phase >= 7 && equippedPreviewPhase != phase) {
+                int previewPhase = phase;
+                var uuid = mc.player.getUUID();
+                var server = mc.getSingleplayerServer();
+                if (server == null) throw new AssertionError("No integrated server for premium preview");
+                server.execute(() -> {
+                    var player = server.getPlayerList().getPlayer(uuid);
+                    if (player == null) throw new AssertionError("No preview player");
+                    player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(previewPhase == 7
+                            ? LudoCraft.VIP_GAMBLERS_PICKAXE.get() : LudoCraft.HIGHROLLER_PICKAXE.get()));
+                    player.setMainArm(HumanoidArm.RIGHT);
+                });
+                equippedPreviewPhase = previewPhase;
+                return;
+            }
+            if (!PUNCHY && phase >= 7) {
+                var expected = phase == 7 ? LudoCraft.VIP_GAMBLERS_PICKAXE.get() : LudoCraft.HIGHROLLER_PICKAXE.get();
+                if (!mc.player.getMainHandItem().is(expected)) return;
+            } else if (!mc.player.getMainHandItem().is(LudoCraft.GAMBLERS_PICKAXE.get()) &&
+                    !(PunchyPoseSweep.enabled() && mc.player.getMainHandItem().is(net.minecraft.world.item.Items.DIAMOND_PICKAXE))) {
+                return;
+            }
             if (PunchyPoseSweep.enabled()) { PunchyPoseSweep.tick(mc); return; }
             float yaw = phase == 4 ? 90 : phase == 5 ? -35 : 0;
             mc.player.setYRot(yaw); mc.player.yRotO = yaw;

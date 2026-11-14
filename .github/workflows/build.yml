@@ -78,9 +78,28 @@ jobs:
           fi
           grep -Fq 'PICKAXE_MODEL_SMOKE_PASS:' client-model-test.log || { echo '::error::Client never confirmed model baking'; tail -80 client-model-test.log; exit 1; }
           grep -Fq 'HAND_POSE_WORLD_PASS:' client-model-test.log || { echo '::error::World pose inspection did not complete'; tail -80 client-model-test.log; exit 1; }
-          test "$(find run/model-smoke/screenshots -name 'hand-*.png' | wc -l)" -eq 7
+          test "$(find run/model-smoke/screenshots -name 'hand-*.png' | wc -l)" -eq 9
           .model-tools/bin/python tools/check_hand_captures.py
-          echo '::notice::Real client: model bake and seven non-empty in-world hand/side/swing screenshots completed.'
+          test -s run/model-smoke/screenshots/hand-vip-firstperson.png
+          test -s run/model-smoke/screenshots/hand-highroller-firstperson.png
+          echo '::notice::Real client: 3D models baked; seven existing hand/pose captures and two premium-pickaxe first-person screenshots completed.'
+      - name: Preserve premium pickaxe in-game previews
+        if: success() && github.ref == 'refs/heads/arena/70f21d2d-ludocraft'
+        run: |
+          DEST=docs/previews/v1.6.0/vanilla
+          mkdir -p "$DEST"
+          cp run/model-smoke/screenshots/hand-vip-firstperson.png "$DEST/vip-firstperson.png"
+          cp run/model-smoke/screenshots/hand-highroller-firstperson.png "$DEST/highroller-firstperson.png"
+          cat > "$DEST/README.md" <<'PREVIEW'
+          # LudoCraft 1.6.0 — actual vanilla-client views
+
+          Captured by the automated Minecraft 1.21.1 NeoForge client smoke world without Punchy. These are real first-person gameplay frames, not model renders. The scripted scene holds each registered pickaxe in the player's main hand; automated captures do not replace a manual visual review.
+          PREVIEW
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEST"
+          git commit -m 'Save 1.6.0 premium pickaxe in-game previews [skip ci]'
+          git push origin HEAD:arena/70f21d2d-ludocraft
       - name: Preserve failed vanilla client evidence for diagnosis
         if: failure() && github.ref == 'refs/heads/arena/70f21d2d-ludocraft'
         run: |
