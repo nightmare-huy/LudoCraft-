@@ -21,6 +21,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - name: Fetch exact optional runtime
         run: python3 tools/fetch_punchy.py
+      - name: Image validation tools
+        run: |
+          python3 -m venv .model-tools
+          .model-tools/bin/pip install Pillow==13.0.0
       - name: Capture actual client with Punchy defaults
         run: |
           sudo apt-get update -qq
@@ -38,6 +42,7 @@ jobs:
           grep -Fq 'PUNCHY_MINING_PASS:' punchy-client.log
           grep -Fq 'PUNCHY_COMPAT_PASS:' punchy-client.log
           test "$(find run/punchy-smoke/screenshots -name 'punchy-*.png' | wc -l)" -eq 11
+          .model-tools/bin/python tools/check_punchy_captures.py
       - name: Save evidence, not a release
         if: always()
         run: |

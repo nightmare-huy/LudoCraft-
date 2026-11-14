@@ -6,6 +6,22 @@
 **[Готовые JAR в Releases](https://github.com/nightmare-huy/LudoCraft-/releases)** ·
 **[Внешний вид и превью по версиям](docs/previews/README.md)**
 
+## 1.5.3 — поправка для Punchy 3.2b
+
+Воспроизведён завал 3D-кирки с **punchy-3.2b-neoforge-1.21.1**, добавлен отдельный
+профиль положения только для неё. Общая модель и положения без Punchy не меняются.
+Punchy остаётся необязательным; отдельный ресурс-пак не нужен.
+
+Проверка теперь запускает **точную версию Punchy** со стандартным конфигом:
+обе руки, взгляд вниз, F5, реальная добыча камня в выживании и возврат в покой.
+Сохранены 11 настоящих игровых кадров. Полная FTB Evolution и шейдеры не проверялись.
+Механика 85/15, Лудка и баланс не изменены.
+
+**[Скачать JAR 1.5.3](https://github.com/nightmare-huy/LudoCraft-/releases/download/v1.5.3/ludocraft-1.5.3.jar)** ·
+**[Снимки с Punchy до/после и границы проверки](docs/previews/v1.5.3/README.md)**
+
+Замените старый LudoCraft JAR на клиенте и сервере. Punchy и datapack Evolution оставьте.
+
 ## 1.5.2 — исправлен вид кирки в руках
 
 Исправлены масштаб и угол в первом лице, хват и наклон в третьем лице,
@@ -250,7 +266,7 @@ feature flags также учитываются. Старый тег `ludka_inpu
 ./gradlew runServer
 ```
 
-Windows: `gradlew.bat` вместо `./gradlew`. Результат: `build/libs/ludocraft-1.5.2.jar` и дополнительный ZIP профиля.
+Windows: `gradlew.bat` вместо `./gradlew`. Результат: `build/libs/ludocraft-1.5.3.jar` и дополнительный ZIP профиля.
 Проверка профиля отдельно: `./gradlew runEvolutionGameTestServer`.
 Проверка игровых положений кирки: `./gradlew runModelSmokeClient` (нужен дисплей/OpenGL,
 в CI используется Xvfb/Mesa). Создаёт отдельный мир в `run/model-smoke`, пишет PNG
