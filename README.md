@@ -197,10 +197,12 @@ GameTests проверяют земля/алмаз/незерит, выдачу 
 ячеек/машин, границы, реальные общие теги и запрет переноса содержимого ставки.
 Сторонние моды в тестовую среду не устанавливаются. Тестовые классы и структура не входят в распространяемый JAR.
 
-**Результат 1.3.0:** `build runGameTestServer` успешно выполнены на Java 21,
-коммит `ec1689a2cc8f38e8aee2ce8b6220d2100e08fc39`.
-[Сборка и тесты](https://github.com/nightmare-huy/LudoCraft-/actions/runs/43566060673) ·
-[Скачать ludocraft-1.3.0.jar](https://github.com/nightmare-huy/LudoCraft-/releases/download/v1.3.0/ludocraft-1.3.0.jar).
+**Результат 1.4.0:** `build runGameTestServer` успешно выполнены на Java 21,
+коммит `98f94bea50cc263fdd3be297fae1b38cf084e6bf`. Пройдены тесты вероятностей,
+новых модовых профилей и восемь серверных GameTests **без установки сторонних модов**.
+[Сборка и тесты](https://github.com/nightmare-huy/LudoCraft-/actions/runs/43568174216) ·
+[Скачать ludocraft-1.4.0.jar](https://github.com/nightmare-huy/LudoCraft-/releases/download/v1.4.0/ludocraft-1.4.0.jar) ·
+[Релиз и SHA256SUMS](https://github.com/nightmare-huy/LudoCraft-/releases/tag/v1.4.0).
 
 **Клиентский GUI вручную в Minecraft ещё не проверен.** Превью в `docs/previews/v1.3.0/`
 явно помечены как макеты по коду, не игровые скриншоты. На конкретном модпаке нужно
