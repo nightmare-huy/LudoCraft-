@@ -13,7 +13,7 @@ import ru.ludocraft.LudoCraft;
 /** Dev-only reference/anchor comparison, loading temporary packs through Punchy's real loader.
  * Does not modify the shipped compatibility resource. All test code is excluded from the JAR. */
 public final class PunchyPoseSweep {
-    private static final String[] CASES = {"vanilla-reference", "released", "offset-x", "offset-y", "offset-z"};
+    private static final String[] CASES = {"vanilla-reference", "released", "compact", "proposed", "proposed-left", "proposed-down"};
     private static int phase, ticks;
     private static boolean loading, ready, capture;
     private static com.google.gson.JsonObject baselineRight, baselineLeft;
@@ -22,7 +22,9 @@ public final class PunchyPoseSweep {
     public static void tick(Minecraft mc) {
         if (phase >= CASES.length) return;
         mc.player.setYRot(0); mc.player.yRotO = 0;
-        mc.player.setXRot(0); mc.player.xRotO = 0;
+        float pitch = CASES[phase].endsWith("down") ? 25 : 0;
+        mc.player.setXRot(pitch); mc.player.xRotO = pitch;
+        mc.player.setMainArm(CASES[phase].endsWith("left") ? net.minecraft.world.entity.HumanoidArm.LEFT : net.minecraft.world.entity.HumanoidArm.RIGHT);
         mc.player.yHeadRot = 0; mc.player.yHeadRotO = 0;
         if (!loading) {
             loading = true;
@@ -33,10 +35,13 @@ public final class PunchyPoseSweep {
                 }
                 var right = baselineRight.deepCopy();
                 var left = baselineLeft.deepCopy();
-                if (CASES[phase].startsWith("offset-")) {
-                    String field = "off" + CASES[phase].substring(7).toUpperCase(java.util.Locale.ROOT);
-                    right.addProperty(field, .25F);
-                    left.addProperty(field, field.equals("offX") ? -.25F : .25F);
+                if (phase >= 2) {
+                    for (var pose : new com.google.gson.JsonObject[]{right, left}) {
+                        pose.addProperty("scale", phase == 2 ? .9F : 1.15F);
+                        pose.addProperty("offZ", .35F);
+                    }
+                    right.addProperty("offX", -.08F);
+                    left.addProperty("offX", .08F);
                 }
                 var sides = new com.google.gson.JsonObject(); sides.add("right", right); sides.add("left", left);
                 var entry = new com.google.gson.JsonObject(); entry.addProperty("kind", "PICKAXE"); entry.add("transforms", sides);
