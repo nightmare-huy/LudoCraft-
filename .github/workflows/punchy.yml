@@ -26,7 +26,7 @@ jobs:
         run: |
           sudo apt-get update -qq
           sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libxi6 libxrender1 libxtst6
-          if ! timeout 480s xvfb-run -a -s '-screen 0 1280x720x24' ./gradlew runPunchySmokeClient --no-daemon > punchy-client.log 2>&1; then
+          if ! timeout 480s xvfb-run -a -s '-screen 0 1280x720x24' ./gradlew runPunchySmokeClient -PpunchySweep=true --no-daemon > punchy-client.log 2>&1; then
             tail -100 punchy-client.log
             while IFS= read -r line; do
               line="${line//'%'/'%25'}"
@@ -35,8 +35,8 @@ jobs:
             exit 1
           fi
           grep -Fq 'PUNCHY_RUNTIME_CONFIRMED: 3.2b' punchy-client.log
-          grep -Fq 'HAND_POSE_WORLD_PASS:' punchy-client.log
-          test "$(find run/punchy-smoke/screenshots -name 'punchy-*.png' | wc -l)" -eq 7
+          grep -Fq 'PUNCHY_SWEEP_PASS:' punchy-client.log
+          test "$(find run/punchy-smoke/screenshots -name 'punchy-*.png' | wc -l)" -eq 5
       - name: Save evidence, not a release
         if: always()
         run: |

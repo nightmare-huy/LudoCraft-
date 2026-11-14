@@ -115,6 +115,7 @@ neoForge.runs {
         systemProperty 'ludocraft.modelSmokeTest', 'true'
         systemProperty 'ludocraft.handPoseTest', 'true'
         systemProperty 'ludocraft.punchyTest', 'true'
+        systemProperty 'ludocraft.punchySweep', providers.gradleProperty('punchySweep').getOrElse('false')
         programArguments.addAll('--width', '960', '--height', '540')
     }
 }

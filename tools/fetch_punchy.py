@@ -24,3 +24,19 @@ with zipfile.ZipFile(jar) as z:
     report.append(z.read('META-INF/neoforge.mods.toml').decode())
     report += [n for n in z.namelist() if any(k in n.lower() for k in ('tuning', 'compat', 'itemrender', 'toolkind'))]
 Path('run/punchy-inspection.txt').write_text('\n'.join(report))
+
+# Development-only candidate packs; NOT part of the mod and NOT enabled by default.
+import json
+for angle in (-90, -45, 0, 45, 90):
+    root = Path(f'run/punchy-smoke/resourcepacks/ludka-punchy-candidate-{angle}')
+    target = root/'assets/minecraft/punchy/compat/ludocraft_candidate.json'
+    target.parent.mkdir(parents=True, exist_ok=True)
+    (root/'pack.mcmeta').write_text(json.dumps({'pack': {'pack_format': 34, 'description': 'Dev-only Punchy pose probe'}}))
+    target.write_text(json.dumps({'itemSpecific': {'ludocraft:gamblers_pickaxe': {
+        'kind': 'PICKAXE', 'transforms': {'right': {'rotZ': angle}, 'left': {'rotZ': -angle}}
+    }}}))
+# Public profile signatures help confirm the configuration API of the exact pinned build.
+with Path('run/punchy-inspection.txt').open('a') as out:
+    for cls in ('punchy.client.render.ToolTuning', 'punchy.client.render.ToolTuning$Profile',
+                'punchy.client.render.ToolTuning$TransformOverride'):
+        subprocess.run(['javap', '-p', '-classpath', str(jar), cls], stdout=out, check=True)

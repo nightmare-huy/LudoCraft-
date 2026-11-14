@@ -88,6 +88,7 @@ public final class HandPoseClientTest {
                 });
             }
             if (!mc.player.getMainHandItem().is(LudoCraft.GAMBLERS_PICKAXE.get())) return;
+            if (PunchyPoseSweep.enabled()) { PunchyPoseSweep.tick(mc); return; }
             float yaw = phase == 4 ? 90 : phase == 5 ? -35 : 0;
             mc.player.setYRot(yaw); mc.player.yRotO = yaw;
             float pitch = PUNCHY && phase == 0 ? 25 : 0;
@@ -131,7 +132,12 @@ public final class HandPoseClientTest {
     }
     @SubscribeEvent
     public static void frame(RenderFrameEvent.Post event) {
-        if (!enabled() || !capture) return;
+        if (!enabled()) return;
+        if (PunchyPoseSweep.enabled()) {
+            try { PunchyPoseSweep.frame(Minecraft.getInstance()); } catch (Throwable failure) { fail(failure); }
+            return;
+        }
+        if (!capture) return;
         capture = false;
         try {
             var mc = Minecraft.getInstance();
