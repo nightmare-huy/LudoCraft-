@@ -42,5 +42,7 @@
   "screen.ludocraft.tier_short_1": "Необыч.",
   "screen.ludocraft.tier_short_2": "Редкий",
   "screen.ludocraft.tier_short_3": "Эпик",
-  "screen.ludocraft.tier_short_4": "Легенд."
+  "screen.ludocraft.tier_short_4": "Легенд.",
+  "screen.ludocraft.default_prize": "Награда: стандартный предмет, без данных ставки.",
+  "screen.ludocraft.contents_warning": "Содержимое, заряд и улучшения ставки не повышают шанс и теряются вместе с ней, даже при победе. Не ставьте заполненные ячейки и контейнеры!"
 }

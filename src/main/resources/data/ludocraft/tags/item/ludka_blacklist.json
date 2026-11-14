@@ -13,6 +13,86 @@
     "minecraft:jigsaw",
     "minecraft:debug_stick",
     "minecraft:spawner",
-    "minecraft:trial_spawner"
+    "minecraft:trial_spawner",
+    {
+      "id": "mekanism:creative_bin",
+      "required": false
+    },
+    {
+      "id": "mekanism:creative_chemical_tank",
+      "required": false
+    },
+    {
+      "id": "mekanism:creative_energy_cube",
+      "required": false
+    },
+    {
+      "id": "mekanism:creative_fluid_tank",
+      "required": false
+    },
+    {
+      "id": "mekanism:bounding_block",
+      "required": false
+    },
+    {
+      "id": "ae2:creative_energy_cell",
+      "required": false
+    },
+    {
+      "id": "ae2:creative_storage_cell",
+      "required": false
+    },
+    {
+      "id": "ae2:debug_card",
+      "required": false
+    },
+    {
+      "id": "ae2:debug_eraser",
+      "required": false
+    },
+    {
+      "id": "ae2:debug_meteorite_placer",
+      "required": false
+    },
+    {
+      "id": "ae2:debug_replicator_card",
+      "required": false
+    },
+    {
+      "id": "ae2:debug_cube_gen",
+      "required": false
+    },
+    {
+      "id": "ae2:debug_energy_gen",
+      "required": false
+    },
+    {
+      "id": "ae2:debug_item_gen",
+      "required": false
+    },
+    {
+      "id": "ae2:debug_phantom_node",
+      "required": false
+    },
+    {
+      "id": "ae2:cable_bus",
+      "required": false
+    },
+    {
+      "id": "enderio:creative_power",
+      "required": false
+    },
+    {
+      "id": "enderio:creative_tab_icon",
+      "required": false
+    },
+    {
+      "id": "enderio:conduit",
+      "required": false
+    },
+    {
+      "id": "enderio:loot_capacitor",
+      "required": false
+    }
   ]
 }

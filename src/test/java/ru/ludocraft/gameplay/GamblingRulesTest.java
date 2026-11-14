@@ -6,6 +6,7 @@ import java.util.Arrays;
 public final class GamblingRulesTest {
     public static void main(String[] args) {
         LudkaRulesTest.run();
+        LudkaModValuesTest.run();
         everyLosingRollUsesOnlyOneRandomDraw();
         exhaustivelyChecksAllWinningRollsAndMultipliers();
         fallbackMatchesOreWordsButNotUnrelatedBlocks();

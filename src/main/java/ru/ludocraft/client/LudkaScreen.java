@@ -11,6 +11,7 @@ import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.client.gui.components.AbstractWidget;
 import net.minecraft.client.gui.components.Button;
 import net.minecraft.client.gui.components.EditBox;
+import net.minecraft.client.gui.components.Tooltip;
 import net.minecraft.client.gui.screens.inventory.AbstractContainerScreen;
 import net.minecraft.client.resources.sounds.SimpleSoundInstance;
 import net.minecraft.core.registries.BuiltInRegistries;
@@ -59,6 +60,7 @@ public final class LudkaScreen extends AbstractContainerScreen<LudkaMenu> {
                         minecraft.gameMode.handleInventoryButtonClick(menu.containerId, LudkaMenu.START_BUTTON);
                     }
                 }, () -> true));
+        upgrade.setTooltip(Tooltip.create(tr("contents_warning")));
         search = addCatalogueWidget(new EditBox(font, leftPos + 12, topPos + 31, 276, 18, tr("search")));
         search.setMaxLength(128);
         search.setHint(tr("search"));
@@ -144,7 +146,8 @@ public final class LudkaScreen extends AbstractContainerScreen<LudkaMenu> {
             ItemStack target = menu.target();
             if (!target.isEmpty() && isHovering(142, 38, 16, 16, mouseX, mouseY)) {
                 g.renderTooltip(font, List.of(target.getHoverName(),
-                        tr("value", menu.targetValue()), tr("tier_" + LudkaRules.rarity(menu.targetValue()))),
+                        tr("value", menu.targetValue()), tr("tier_" + LudkaRules.rarity(menu.targetValue())),
+                        tr("default_prize")),
                         Optional.empty(), mouseX, mouseY);
             }
         }
@@ -180,7 +183,8 @@ public final class LudkaScreen extends AbstractContainerScreen<LudkaMenu> {
         if (hovered != null) {
             g.renderTooltip(font, List.of(hovered.stack().getHoverName(), Component.literal(hovered.id().toString()),
                     tr("tier_" + hovered.tier()), tr("value", hovered.value()),
-                    tr("chance", LudkaRules.percent(LudkaRules.chance(menu.stakeValue(), hovered.value())))),
+                    tr("chance", LudkaRules.percent(LudkaRules.chance(menu.stakeValue(), hovered.value()))),
+                    tr("default_prize")),
                     Optional.empty(), mouseX, mouseY);
         }
     }

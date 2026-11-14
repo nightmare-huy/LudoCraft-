@@ -169,6 +169,28 @@ public final class LudkaGameTests {
         m.removed(p); h.succeed();
     }
     @GameTest(template = "ludka_test")
+    public static void commonMaterialFormsAndDefaultPrizes(GameTestHelper h) {
+        // Real synced NeoForge tags, not a mocked resolver. Iron nuggets must not be treated as tools.
+        h.assertTrue(LudkaValues.base(new ItemStack(Items.IRON_NUGGET)) == 1, "Iron nugget form ignored");
+        h.assertTrue(LudkaValues.base(new ItemStack(Items.GOLD_NUGGET)) == 3, "Gold nugget form ignored");
+        h.assertTrue(LudkaValues.base(new ItemStack(Items.RAW_COPPER)) == 4, "Raw material tag ignored");
+        h.assertTrue(LudkaValues.base(new ItemStack(Items.IRON_PICKAXE)) == 48, "Equipment pricing regressed");
+        h.assertTrue(LudkaValues.base(new ItemStack(Items.NETHERITE_PICKAXE)) == 2432, "Netherite pricing regressed");
+        // Even expensive named/filled containers cannot transfer their components to a reward.
+        FakePlayer p = player(h); LudkaMenu m = menu(p);
+        ItemStack stake = new ItemStack(Items.SHULKER_BOX);
+        stake.set(DataComponents.CUSTOM_NAME, Component.literal("Full ME storage cell"));
+        stake.set(DataComponents.CONTAINER, net.minecraft.world.item.component.ItemContainerContents.fromItems(
+                java.util.List.of(new ItemStack(Items.NETHERITE_INGOT, 64))));
+        h.assertTrue(LudkaValues.stake(stake) == LudkaValues.base(new ItemStack(Items.SHULKER_BOX)), "Contents increased stake");
+        m.getSlot(0).set(stake);
+        h.assertTrue(m.selectTarget(p, id(Items.SHULKER_BOX)), "Container target rejected");
+        h.getLevel().random.setSeed(seedFor(m.chance(), true));
+        h.assertTrue(m.clickMenuButton(p, 4), "Container wager rejected");
+        h.assertTrue(ItemStack.matches(m.getSlot(1).getItem(), Items.SHULKER_BOX.getDefaultInstance()), "Container contents copied into prize");
+        m.removed(p); h.succeed();
+    }
+    @GameTest(template = "ludka_test")
     public static void dataSlotsAndSelectionCodecRoundTrip(GameTestHelper h) {
         FakePlayer p = player(h); LudkaMenu source = menu(p), replica = menu(player(h));
         source.setSynchronizer(new ContainerSynchronizer() {

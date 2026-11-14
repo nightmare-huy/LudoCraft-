@@ -42,5 +42,7 @@
   "screen.ludocraft.tier_short_1": "Uncomm.",
   "screen.ludocraft.tier_short_2": "Rare",
   "screen.ludocraft.tier_short_3": "Epic",
-  "screen.ludocraft.tier_short_4": "Legend"
+  "screen.ludocraft.tier_short_4": "Legend",
+  "screen.ludocraft.default_prize": "Prize: default item, without the wager’s data.",
+  "screen.ludocraft.contents_warning": "Stored contents, charge and upgrades add no value and are lost with the wager, even on a win. Do not wager filled cells or containers!"
 }

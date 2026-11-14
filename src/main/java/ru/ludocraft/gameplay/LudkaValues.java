@@ -20,10 +20,6 @@ public final class LudkaValues {
     private static final List<TagKey<Item>> OVERRIDES = java.util.Arrays.stream(OVERRIDE_VALUES)
             .mapToObj(value -> TagKey.create(Registries.ITEM, LudoCraft.id("value/" + value))).toList();
     private static final Map<String, Integer> VANILLA = new HashMap<>();
-    private static final Map<TagKey<Item>, Integer> MATERIALS = Map.of(
-            common("ingots/netherite"), 2048, common("gems/diamond"), 128,
-            common("gems/emerald"), 96, common("ingots/gold"), 32,
-            common("ingots/iron"), 16, common("ingots/copper"), 8);
     private static final TagKey<Item> GEMS = common("gems"), INGOTS = common("ingots");
     static {
         values(1, "dirt", "cobblestone", "stone", "sand", "gravel", "netherrack", "rotten_flesh", "stick", "dirt_path");
@@ -58,15 +54,20 @@ public final class LudkaValues {
             if (exact != null) return exact;
             String path = id.getPath();
             int units = materialCount(path);
-            if (path.startsWith("netherite_")) return Math.min(LudkaRules.MAX_VALUE, 2048 + 128 * units);
-            if (path.startsWith("diamond_")) return 128 * units;
-            if (path.startsWith("iron_")) return 16 * units;
-            if (path.startsWith("golden_")) return 32 * units;
+            if (units > 0) {
+                if (path.startsWith("netherite_")) return Math.min(LudkaRules.MAX_VALUE, 2048 + 128 * units);
+                if (path.startsWith("diamond_")) return 128 * units;
+                if (path.startsWith("iron_")) return 16 * units;
+                if (path.startsWith("golden_")) return 32 * units;
+            }
         }
-        int material = 0;
-        for (var entry : MATERIALS.entrySet()) {
-            if (stack.is(entry.getKey())) material = Math.max(material, entry.getValue());
-        }
+        // Exact optional-mod profiles precede common tags; a generic tag must not flatten a machine tier.
+        int profile = LudkaModValues.lookup(id.getNamespace(), id.getPath());
+        if (profile > 0) return profile;
+        int material = stack.getTags()
+                .filter(tag -> tag.location().getNamespace().equals("c"))
+                .mapToInt(tag -> LudkaModValues.commonTag(tag.location().getPath()))
+                .max().orElse(0);
         if (material > 0) return material;
         int value = stack.getItem() instanceof BlockItem ? 2 : 4;
         if (stack.is(GEMS)) value = Math.max(value, 128);
@@ -93,7 +94,8 @@ public final class LudkaValues {
         if (path.endsWith("boots")) return 4;
         if (path.endsWith("pickaxe") || path.endsWith("axe")) return 3;
         if (path.endsWith("sword") || path.endsWith("hoe")) return 2;
-        return 1;
+        if (path.endsWith("shovel")) return 1;
+        return 0;
     }
     public static int stake(ItemStack stack) {
         int value = base(stack);
