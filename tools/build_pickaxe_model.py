@@ -46,15 +46,16 @@ BOXES = [
     ('badge', (6.5, 11.75, 6), (9.5, 13.75, 6.25)),
     ('badge', (6.5, 11.75, 9.75), (9.5, 13.75, 10)),
 ]
+# Upright 3D mesh, not a diagonal generated sprite. Minecraft mirrors left-hand Y/Z itself.
 DISPLAY = {
     'gui': {'rotation': [15, -35, -35], 'translation': [0, 0, 0], 'scale': [.75, .75, .75]},
     'ground': {'rotation': [0, 0, 0], 'translation': [0, 3, 0], 'scale': [.5, .5, .5]},
     'fixed': {'rotation': [0, 180, -40], 'translation': [0, 0, 0], 'scale': [.7, .7, .7]},
     'head': {'rotation': [0, 0, 0], 'translation': [0, 13, 0], 'scale': [.8, .8, .8]},
-    'thirdperson_righthand': {'rotation': [0, -90, 35], 'translation': [0, 3, 1], 'scale': [.85, .85, .85]},
-    'thirdperson_lefthand': {'rotation': [0, 90, -35], 'translation': [0, 3, 1], 'scale': [.85, .85, .85]},
-    'firstperson_righthand': {'rotation': [0, -90, 20], 'translation': [1.13, 3.2, 1.13], 'scale': [.85, .85, .85]},
-    'firstperson_lefthand': {'rotation': [0, 90, -20], 'translation': [1.13, 3.2, 1.13], 'scale': [.85, .85, .85]},
+    'thirdperson_righthand': {'rotation': [90, 0, 0], 'translation': [0, -2, 2], 'scale': [.65, .65, .65]},
+    'thirdperson_lefthand': {'rotation': [90, 0, 0], 'translation': [0, -2, 2], 'scale': [.65, .65, .65]},
+    'firstperson_righthand': {'rotation': [0, -25, 10], 'translation': [-2, 3, -2.5], 'scale': [.6, .6, .6]},
+    'firstperson_lefthand': {'rotation': [0, -25, 10], 'translation': [-2, 3, -2.5], 'scale': [.6, .6, .6]},
 }
 
 def voxels():

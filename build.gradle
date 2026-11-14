@@ -101,6 +101,7 @@ neoForge.runs {
         client()
         gameDirectory = project.file('run/model-smoke')
         systemProperty 'ludocraft.modelSmokeTest', 'true'
+        systemProperty 'ludocraft.handPoseTest', 'true'
         programArguments.addAll('--width', '960', '--height', '540')
     }
 }

@@ -53,7 +53,11 @@ public final class PickaxeModelSmokeTest {
                 require(scale.x > 0 && scale.y > 0 && scale.z > 0, "Invisible or inverted transform: " + context);
             }
             System.out.println("PICKAXE_MODEL_SMOKE_PASS: real client baked 241 quads, correct sprites, finite vertices/UVs, six directions and all display transforms");
-            Minecraft.getInstance().execute(() -> Minecraft.getInstance().stop());
+            if (Boolean.getBoolean("ludocraft.handPoseTest")) {
+                HandPoseClientTest.startAfterBake();
+            } else {
+                Minecraft.getInstance().execute(() -> Minecraft.getInstance().stop());
+            }
         } catch (Throwable failure) {
             failure.printStackTrace();
             System.err.println("PICKAXE_MODEL_SMOKE_FAIL: " + failure);
