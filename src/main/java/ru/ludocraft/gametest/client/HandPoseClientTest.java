@@ -101,7 +101,10 @@ public final class HandPoseClientTest {
             mc.player.setXRot(pitch); mc.player.xRotO = pitch;
             mc.player.yBodyRot = 0; mc.player.yBodyRotO = 0;
             mc.player.yHeadRot = yaw; mc.player.yHeadRotO = yaw;
-            if (ticks == 0) configureView(mc);
+            if (ticks == 0) {
+                if (PUNCHY && phase == 0) PunchyPoseSweep.verifyLoadedCompatibility(mc);
+                configureView(mc);
+            }
             ticks++;
             if (phase == 6 && ticks == 60) mc.player.swing(InteractionHand.MAIN_HAND);
             if (PUNCHY) mc.options.keyAttack.setDown(phase >= 7 && phase <= 9);

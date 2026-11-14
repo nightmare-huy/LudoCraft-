@@ -31,6 +31,7 @@ jobs:
           python3 -m venv .model-tools
           .model-tools/bin/pip install Pillow==13.0.0
           .model-tools/bin/python tools/check_pickaxe_model.py
+          .model-tools/bin/python tools/check_punchy_compat.py
       - name: Build and test
         shell: bash
         run: |
@@ -85,6 +86,9 @@ jobs:
               assert z.read(model) == Path('src/main/resources', model).read_bytes()
               assert z.read(texture) == Path('src/main/resources', texture).read_bytes()
               assert len(json.loads(z.read(model))['elements']) == 241
+              compat = 'assets/minecraft/punchy/compat/ludocraft_gamblers_pickaxe.json'
+              assert z.read(compat) == Path('src/main/resources', compat).read_bytes()
+              assert not any(n.startswith('punchy/') or n.endswith('.jar') for n in z.namelist())
           pack = glob.glob('build/libs/*-ftb-evolution-1.47.0.zip')
           assert len(pack) == 1
           with zipfile.ZipFile(pack[0]) as z:

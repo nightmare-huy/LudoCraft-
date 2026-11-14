@@ -4,11 +4,11 @@
       "kind": "PICKAXE",
       "transforms": {
         "right": {
-          "scale": 1.0,
+          "scale": 0.9,
           "offX": 0.0,
           "offY": 0.0,
           "offZ": 0.0,
-          "rotX": -60.0,
+          "rotX": -90.0,
           "rotY": 0.0,
           "rotZ": 0.0,
           "pivotX": 0.0,
@@ -16,11 +16,11 @@
           "pivotZ": 0.0
         },
         "left": {
-          "scale": 1.0,
+          "scale": 0.9,
           "offX": 0.0,
           "offY": 0.0,
           "offZ": 0.0,
-          "rotX": -60.0,
+          "rotX": -90.0,
           "rotY": 0.0,
           "rotZ": 0.0,
           "pivotX": 0.0,

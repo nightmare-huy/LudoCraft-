@@ -63,6 +63,28 @@ public final class PunchyPoseSweep {
         }
         return json;
     }
+    public static void verifyLoadedCompatibility(Minecraft mc) throws Exception {
+        var resource = mc.getResourceManager().getResource(net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(
+                "minecraft", "punchy/compat/ludocraft_gamblers_pickaxe.json")).orElseThrow();
+        com.google.gson.JsonObject expected;
+        try (var reader = resource.openAsReader()) {
+            expected = com.google.gson.JsonParser.parseReader(reader).getAsJsonObject()
+                    .getAsJsonObject("itemSpecific").getAsJsonObject("ludocraft:gamblers_pickaxe").getAsJsonObject("transforms");
+        }
+        for (boolean left : new boolean[]{false, true}) {
+            var actual = profile(mc, left);
+            var pose = expected.getAsJsonObject(left ? "left" : "right");
+            for (String key : pose.keySet()) {
+                if (Math.abs(pose.get(key).getAsFloat() - actual.get(key).getAsFloat()) > .0001F)
+                    throw new AssertionError("Punchy did not apply shipped " + key + ": " + actual);
+            }
+        }
+        var method = Class.forName("punchy.client.render.ToolTuning").getMethod("hasSpecificProfile", net.minecraft.world.item.ItemStack.class);
+        if (!(Boolean) method.invoke(null, mc.player.getMainHandItem()) || (Boolean) method.invoke(null,
+                new net.minecraft.world.item.ItemStack(net.minecraft.world.item.Items.DIAMOND_PICKAXE)))
+            throw new AssertionError("Wrong item-specific profile scope");
+        System.out.println("PUNCHY_COMPAT_PASS: shipped JSON applied to both hands, vanilla diamond pickaxe unaffected");
+    }
     public static void frame(Minecraft mc) throws Exception {
         if (!capture || mc.getOverlay() != null) return;
         capture = false;

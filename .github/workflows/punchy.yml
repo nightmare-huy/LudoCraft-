@@ -36,15 +36,12 @@ jobs:
           grep -Fq 'PUNCHY_RUNTIME_CONFIRMED: 3.2b' punchy-client.log
           grep -Fq 'HAND_POSE_WORLD_PASS:' punchy-client.log
           grep -Fq 'PUNCHY_MINING_PASS:' punchy-client.log
+          grep -Fq 'PUNCHY_COMPAT_PASS:' punchy-client.log
           test "$(find run/punchy-smoke/screenshots -name 'punchy-*.png' | wc -l)" -eq 11
       - name: Save evidence, not a release
         if: always()
         run: |
           mkdir -p docs/previews/v1.5.3/punchy
-          if test -f run/punchy-smoke/punchy-profiles.txt; then
-            cp run/punchy-smoke/punchy-profiles.txt docs/previews/v1.5.3/punchy/
-          fi
-          cp run/punchy-inspection.txt docs/previews/v1.5.3/punchy/runtime-inspection.txt
           if test -d run/punchy-smoke/screenshots; then
             find run/punchy-smoke/screenshots -name 'punchy-*.png' -exec cp '{}' docs/previews/v1.5.3/punchy/ \;
           fi
