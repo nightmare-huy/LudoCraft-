@@ -46,6 +46,8 @@ jobs:
       - name: Detect whether this version is already released
         id: published
         if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           VERSION=$(sed -n 's/^mod_version=//p' gradle.properties | tr -d '\r')
           if gh release view "v${VERSION}" >/dev/null 2>&1; then

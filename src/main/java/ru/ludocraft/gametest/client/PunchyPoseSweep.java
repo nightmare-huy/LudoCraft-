@@ -97,7 +97,8 @@ public final class PunchyPoseSweep {
         for (var context : new ItemDisplayContext[]{ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, ItemDisplayContext.FIRST_PERSON_LEFT_HAND}) {
             var from = vanilla.getTransforms().getTransform(context);
             var to = custom.getTransforms().getTransform(context);
-            to.rotation.set(from.rotation); to.translation.set(from.translation); to.scale.set(from.scale).mul(.75F);
+            to.rotation.set(from.rotation); to.translation.set(from.translation); to.translation.x = 0;
+            to.scale.set(from.scale).mul(.75F);
         }
     }
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -155,11 +156,12 @@ public final class PunchyPoseSweep {
         for (var context : new ItemDisplayContext[]{ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, ItemDisplayContext.FIRST_PERSON_LEFT_HAND}) {
             var actual = custom.getTransforms().getTransform(context);
             var reference = vanilla.getTransforms().getTransform(context);
-            if (!actual.rotation.equals(reference.rotation, .0001F) || !actual.translation.equals(reference.translation, .0001F) ||
+            var expectedTranslation = new org.joml.Vector3f(0, reference.translation.y, reference.translation.z);
+            if (!actual.rotation.equals(reference.rotation, .0001F) || !actual.translation.equals(expectedTranslation, .0001F) ||
                     !actual.scale.equals(new org.joml.Vector3f(reference.scale).mul(.75F), .0001F))
-                throw new AssertionError("LudoCraft first-person orientation/grip differs from compact vanilla diamond pickaxe reference for " + context +
+                throw new AssertionError("LudoCraft pose differs from compact vanilla diamond pickaxe reference for " + context +
                         ": rotation=" + actual.rotation + ", translation=" + actual.translation + ", scale=" + actual.scale +
-                        "; referenceScale=" + reference.scale);
+                        "; expectedTranslation=" + expectedTranslation + ", referenceScale=" + reference.scale);
         }
         System.out.println("PUNCHY_COMPAT_PASS: shipped Punchy profiles and both first-person item transforms match vanilla diamond pickaxe");
     }

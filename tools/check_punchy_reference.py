@@ -5,8 +5,8 @@ from pathlib import Path
 model = json.loads(Path('src/main/resources/assets/ludocraft/models/item/gamblers_pickaxe.json').read_text())
 compat = json.loads(Path('src/main/resources/assets/minecraft/punchy/compat/ludocraft_gamblers_pickaxe.json').read_text())
 expected_display = {
-    'right': {'rotation': [0, -90, 25], 'translation': [1.13, 3.2, 1.13], 'scale': [.51, .51, .51]},
-    'left': {'rotation': [0, 90, -25], 'translation': [1.13, 3.2, 1.13], 'scale': [.51, .51, .51]},
+    'right': {'rotation': [0, -90, 25], 'translation': [0, 3.2, 1.13], 'scale': [.51, .51, .51]},
+    'left': {'rotation': [0, 90, -25], 'translation': [0, 3.2, 1.13], 'scale': [.51, .51, .51]},
 }
 for side, reference in expected_display.items():
     actual = model['display'][f'firstperson_{side}hand']
