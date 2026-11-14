@@ -3,8 +3,11 @@ package ru.ludocraft.item;
 import java.util.List;
 import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
+import net.minecraft.core.Holder;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.enchantment.Enchantment;
+import ru.ludocraft.LudoCraft;
 import net.minecraft.world.item.PickaxeItem;
 import net.minecraft.world.item.Tiers;
 import net.minecraft.world.item.TooltipFlag;
@@ -13,6 +16,16 @@ public final class VipGamblersPickaxeItem extends PickaxeItem {
     public VipGamblersPickaxeItem(Item.Properties properties) {
         super(Tiers.NETHERITE, properties.fireResistant()
                 .attributes(PickaxeItem.createAttributes(Tiers.NETHERITE, 1.0F, -2.8F)));
+    }
+
+    @Override
+    public boolean supportsEnchantment(ItemStack stack, Holder<Enchantment> enchantment) {
+        return !enchantment.is(LudoCraft.id("gambling")) && super.supportsEnchantment(stack, enchantment);
+    }
+
+    @Override
+    public boolean isPrimaryItemFor(ItemStack stack, Holder<Enchantment> enchantment) {
+        return !enchantment.is(LudoCraft.id("gambling")) && super.isPrimaryItemFor(stack, enchantment);
     }
 
     @Override

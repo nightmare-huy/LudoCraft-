@@ -14,18 +14,17 @@ final class JackpotFireworkParticle extends NoRenderParticle {
 
     JackpotFireworkParticle(ClientLevel level, double x, double y, double z) {
         super(level, x, y, z);
-        lifetime = 13;
+        double angle = level.random.nextDouble() * Math.PI * 2;
+        double radius = level.random.nextDouble() * 0.8;
+        this.x += Math.cos(angle) * radius;
+        this.y += 0.45 + level.random.nextDouble() * 0.35;
+        this.z += Math.sin(angle) * radius;
+        lifetime = 1;
     }
 
     @Override
     public void tick() {
-        if (age % 6 == 0) {
-            double angle = (age / 6) * Math.PI * 2 / 3;
-            level.createFireworks(x + Math.cos(angle) * 0.8, y + 0.6 + age * 0.06,
-                    z + Math.sin(angle) * 0.8, 0, 0.03, 0, EXPLOSIONS);
-        }
-        if (++age >= lifetime) {
-            remove();
-        }
+        level.createFireworks(x, y, z, 0, 0.03, 0, EXPLOSIONS);
+        if (++age >= lifetime) remove();
     }
 }

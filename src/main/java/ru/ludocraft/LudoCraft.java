@@ -3,9 +3,11 @@ package ru.ludocraft;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.item.EnchantedBookItem;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import ru.ludocraft.menu.LudkaMenu;
@@ -18,6 +20,7 @@ import net.neoforged.neoforge.event.BuildCreativeModeTabContentsEvent;
 import net.neoforged.neoforge.registries.DeferredHolder;
 import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
+import ru.ludocraft.gameplay.EnchantedGambling;
 import ru.ludocraft.gameplay.OreGambling;
 import ru.ludocraft.item.GamblersPickaxeItem;
 import ru.ludocraft.item.VipGamblersPickaxeItem;
@@ -58,6 +61,8 @@ public final class LudoCraft {
         modBus.addListener(this::addCreativeItems);
         modBus.addListener(SelectLudkaTarget::register);
         // Process the already calculated loot. Never recalculate loot or spawn a second vanilla drop.
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOW, EnchantedGambling::onBlockDrops);
+        NeoForge.EVENT_BUS.addListener(EventPriority.LOW, EnchantedGambling::onAnvilUpdate);
         NeoForge.EVENT_BUS.addListener(EventPriority.LOW, OreGambling::onBlockDrops);
     }
 
@@ -66,6 +71,11 @@ public final class LudoCraft {
     }
 
     private void addCreativeItems(BuildCreativeModeTabContentsEvent event) {
+        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
+            var enchantment = event.getParameters().holders().lookupOrThrow(Registries.ENCHANTMENT)
+                    .get(ResourceKey.create(Registries.ENCHANTMENT, id("gambling")));
+            enchantment.ifPresent(holder -> event.accept(EnchantedBookItem.createForEnchantment(holder)));
+        }
         if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(GAMBLERS_PICKAXE);
             event.accept(VIP_GAMBLERS_PICKAXE);

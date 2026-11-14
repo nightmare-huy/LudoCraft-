@@ -1,4 +1,10 @@
 {
+  "enchantment.ludocraft.gambling": "Лудомания",
+  "message.ludocraft.gambling_jackpot": "777! Джекпот! Дроп ×%s!",
+  "tooltip.ludocraft.gambling": "Лудомания",
+  "tooltip.ludocraft.gambling.level_1": "85%: ни дропа, ни опыта; 15%: дроп ×2–×5.",
+  "tooltip.ludocraft.gambling.level_2": "75%: ни дропа, ни опыта; 25%: дроп ×3–×8.",
+  "tooltip.ludocraft.gambling.level_3": "65%: ни дропа, ни опыта; 35%: мега-джекпот ×5, ×8, ×10, ×12 или ×15.",
   "item.ludocraft.gamblers_pickaxe": "Кирка Лудомании",
   "message.ludocraft.loss": "Не повезло!",
   "message.ludocraft.jackpot": "777! Джекпот! Дроп ×%s!",

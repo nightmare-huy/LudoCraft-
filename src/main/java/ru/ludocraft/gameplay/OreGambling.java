@@ -97,8 +97,8 @@ public final class OreGambling {
         level.sendParticles(LudoCraft.CONFETTI.get(), x, y, z, highroller ? 180 : 70,
                 highroller ? 0.65 : 0.35, highroller ? 0.55 : 0.25,
                 highroller ? 0.65 : 0.35, highroller ? 0.38 : 0.25);
-        // Each client-side emitter makes three vanilla-rendered explosions; two emitters create six.
-        level.sendParticles(LudoCraft.JACKPOT_FIREWORK.get(), x, y, z, highroller ? 2 : 1, 0, 0, 0, 0);
+        // One particle now creates exactly one explosion; preserve the existing three/six-firework jackpots.
+        level.sendParticles(LudoCraft.JACKPOT_FIREWORK.get(), x, y, z, highroller ? 6 : 3, 0, 0, 0, 0);
         if (highroller && multiplier == 15 && player instanceof ServerPlayer serverPlayer) {
             var advancement = level.getServer().getAdvancements()
                     .get(ResourceLocation.fromNamespaceAndPath(LudoCraft.MOD_ID, "gameplay/mega_jackpot"));

@@ -5,11 +5,14 @@ import java.util.UUID;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.tags.TagKey;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
@@ -146,6 +149,21 @@ public final class LudkaGameTests {
     }
     @GameTest(template = "ludka_test")
     public static void registryCoverageAndValuation(GameTestHelper h) {
+        var gamblingKey = ResourceKey.create(Registries.ENCHANTMENT, LudoCraft.id("gambling"));
+        var gambling = h.getLevel().registryAccess().lookupOrThrow(Registries.ENCHANTMENT).getOrThrow(gamblingKey);
+        for (String tagName : new String[]{"in_enchanting_table", "on_random_loot", "tradeable"}) {
+            var tag = TagKey.create(Registries.ENCHANTMENT, ResourceLocation.fromNamespaceAndPath("minecraft", tagName));
+            h.assertTrue(gambling.is(tag), "Gambling missing from enchantment tag " + tagName);
+        }
+        ItemStack vanillaPickaxe = new ItemStack(Items.IRON_PICKAXE);
+        h.assertTrue(vanillaPickaxe.supportsEnchantment(gambling) && vanillaPickaxe.isPrimaryItemFor(gambling),
+                "Gambling unavailable on vanilla pickaxes");
+        for (Item pickaxe : new Item[]{LudoCraft.GAMBLERS_PICKAXE.get(), LudoCraft.VIP_GAMBLERS_PICKAXE.get(),
+                LudoCraft.HIGHROLLER_PICKAXE.get()}) {
+            ItemStack excluded = new ItemStack(pickaxe);
+            h.assertTrue(!excluded.supportsEnchantment(gambling) && !excluded.isPrimaryItemFor(gambling),
+                    "Gambling allowed on excluded pickaxe " + id(pickaxe));
+        }
         for (var item : BuiltInRegistries.ITEM) {
             var stack = item.getDefaultInstance();
             if (LudkaCompatibility.accepts(stack, h.getLevel())) {

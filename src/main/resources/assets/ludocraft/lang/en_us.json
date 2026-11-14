@@ -1,4 +1,10 @@
 {
+  "enchantment.ludocraft.gambling": "Gambling",
+  "message.ludocraft.gambling_jackpot": "777! Jackpot! Drops ×%s!",
+  "tooltip.ludocraft.gambling": "Gambling",
+  "tooltip.ludocraft.gambling.level_1": "85%: no drops or experience; 15%: drops ×2–×5.",
+  "tooltip.ludocraft.gambling.level_2": "75%: no drops or experience; 25%: drops ×3–×8.",
+  "tooltip.ludocraft.gambling.level_3": "65%: no drops or experience; 35%: mega jackpot ×5, ×8, ×10, ×12, or ×15.",
   "item.ludocraft.gamblers_pickaxe": "Gambler's Pickaxe",
   "message.ludocraft.loss": "Unlucky!",
   "message.ludocraft.jackpot": "777! Jackpot! Drops ×%s!",

@@ -128,6 +128,17 @@ jobs:
           assert len(jar) == 1
           with zipfile.ZipFile(jar[0]) as z:
               assert not any('/gametest/' in n or n.startswith('data/ludocraft_evolution/') for n in z.namelist())
+              gambling_path = 'data/ludocraft/enchantment/gambling.json'
+              gambling = json.loads(z.read(gambling_path))
+              assert gambling['supported_items'] == '#minecraft:pickaxes'
+              assert gambling['primary_items'] == '#minecraft:pickaxes'
+              assert gambling['max_level'] == 3
+              for tag in ('in_enchanting_table', 'on_random_loot', 'tradeable'):
+                  tag_path = f'data/minecraft/tags/enchantment/{tag}.json'
+                  assert 'ludocraft:gambling' in json.loads(z.read(tag_path))['values']
+              for language, name in (('en_us', 'Gambling'), ('ru_ru', 'Лудомания')):
+                  lang_path = f'assets/ludocraft/lang/{language}.json'
+                  assert json.loads(z.read(lang_path))['enchantment.ludocraft.gambling'] == name
               marker = 'data/ludocraft/tags/item/balance/ftb_evolution_1_47_0.json'
               assert json.loads(z.read(marker))['values'] == []
               model = 'assets/ludocraft/models/item/gamblers_pickaxe.json'
@@ -217,13 +228,17 @@ jobs:
           test -s "release/$preset"
           (cd release && sha256sum "$jar" "$preset" > SHA256SUMS.txt)
           cat > release/notes.md <<'NOTES'
-          ## LudoCraft ${VERSION} — refined premium pickaxe models
+          ## LudoCraft ${VERSION} — Gambling enchantment
 
           **Minecraft Java 1.21.1 · NeoForge 21.1.265 · Java 21**
 
-          Reworked the VIP and Highroller 3D models to read as hooked, sharp pickaxes rather than blocky hammers: compact centered slot-machine heads, long stepped blades that curve down to narrow tips, proportional per-face UVs, and unchanged first-/third-person item transforms. VIP keeps its green 777 panel; Highroller keeps its compact crown and three no-shade slot drums. Real first-person screenshots from the vanilla NeoForge client are included in the repository previews.
+          Adds the data-driven **Gambling I–III** enchantment for vanilla and modded pickaxes in `#minecraft:pickaxes`. It is available from enchanting, librarian trades, random enchantment loot, and the creative enchanted-book inventory. Gambler’s, VIP Gambler’s, and Highroller pickaxes are explicitly excluded from both table and anvil application.
 
-          Their mechanics are unchanged: VIP has netherite tool properties and is fire resistant (75% loss, otherwise drops ×3, ×4, ×5, ×6, ×7, ×8, or ×10); Highroller is fire resistant, Epic, durability 4096, mining speed 12, attack bonus and enchantability 22 (65% loss, otherwise drops ×5, ×8, ×10, ×12, ×15, or ×20). Its ×15 win awards Mega Jackpot and successful wins make six visual firework bursts.
+          - I: 85% loss of ore drops and XP, otherwise drops ×2–×5.
+          - II: 75% loss, otherwise drops ×3–×8.
+          - III: 65% loss, otherwise mega-jackpot ×5, ×8, ×10, ×12, or ×15.
+
+          Losses show “Unlucky!”. Successful wins spawn confetti, play `jackpot_777`, and make one firework for levels I/II or a six-firework volley for level III. The existing premium pickaxe features and 3D models are retained.
 
           Install `ludocraft-${VERSION}.jar` in the `mods` folder on the client and server. The optional FTB Evolution 1.47.0 datapack ZIP is a separate download and is not required for the mod.
 
