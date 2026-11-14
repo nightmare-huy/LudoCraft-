@@ -128,7 +128,17 @@ public final class PunchyPoseSweep {
         var method = Class.forName("punchy.client.render.ToolTuning").getMethod("hasSpecificProfile", ItemStack.class);
         if (!(Boolean) method.invoke(null, mc.player.getMainHandItem()) || (Boolean) method.invoke(null, new ItemStack(Items.DIAMOND_PICKAXE)))
             throw new AssertionError("Wrong item-specific profile scope");
-        System.out.println("PUNCHY_COMPAT_PASS: shipped JSON applied to both hands, vanilla diamond pickaxe unaffected");
+        var custom = mc.getModelManager().getModel(ModelResourceLocation.inventory(LudoCraft.id("gamblers_pickaxe")));
+        var vanilla = mc.getModelManager().getModel(ModelResourceLocation.inventory(ResourceLocation.withDefaultNamespace("diamond_pickaxe")));
+        for (var context : new ItemDisplayContext[]{ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, ItemDisplayContext.FIRST_PERSON_LEFT_HAND}) {
+            var actual = custom.getTransforms().getTransform(context);
+            var reference = vanilla.getTransforms().getTransform(context);
+            if (!actual.rotation.equals(reference.rotation, .0001F) || !actual.translation.equals(reference.translation, .0001F) ||
+                    !actual.scale.equals(reference.scale, .0001F))
+                throw new AssertionError("LudoCraft first-person item transform differs from vanilla diamond pickaxe for " + context +
+                        ": rotation=" + actual.rotation + ", translation=" + actual.translation + ", scale=" + actual.scale);
+        }
+        System.out.println("PUNCHY_COMPAT_PASS: shipped Punchy profiles and both first-person item transforms match vanilla diamond pickaxe");
     }
     public static void frame(Minecraft mc) throws Exception {
         if (!capture || mc.getOverlay() != null) return;

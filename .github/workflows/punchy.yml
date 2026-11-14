@@ -43,6 +43,31 @@ jobs:
           grep -Fq 'PUNCHY_COMPAT_PASS:' punchy-client.log
           test "$(find run/punchy-smoke/screenshots -name 'punchy-*.png' | wc -l)" -eq 11
           .model-tools/bin/python tools/check_punchy_captures.py
+      - name: Save versioned real-game evidence
+        run: |
+          VERSION=$(sed -n 's/^mod_version=//p' gradle.properties | tr -d '\r')
+          PREVIEW="docs/previews/v${VERSION}"
+          mkdir -p "$PREVIEW/punchy"
+          cp run/punchy-smoke/screenshots/punchy-*.png "$PREVIEW/punchy/"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          version = Path('gradle.properties').read_text().split('mod_version=',1)[1].splitlines()[0].strip()
+          preview = Path(f'docs/previews/v{version}/punchy')
+          (preview/'capture.json').write_text(json.dumps({
+              'source_commit': os.environ['GITHUB_SHA'],
+              'run_url': f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
+              'runtime': 'Minecraft 1.21.1, NeoForge 21.1.265, Punchy 3.2b, fresh default config',
+              'status': 'Automated game captures; visual review is separate',
+              'mode': 'survival: both hands, idle, F5, attack-key mining and recovery'
+          }, indent=2) + chr(10))
+          PY
+          .model-tools/bin/python tools/render_punchy_comparison.py "$VERSION"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$PREVIEW/punchy" "$PREVIEW/punchy-comparison.png"
+          git commit -m "Record Punchy 3.2b game evidence for $VERSION [skip ci]"
+          git push origin HEAD:arena/70f21d2d-ludocraft
       - uses: actions/upload-artifact@v4
         if: always()
         with:
