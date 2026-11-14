@@ -13,8 +13,10 @@ if version == '1.5.3':
     before='punchy-before/punchy-after-first-right.png'
     before_label='До — LudoCraft 1.5.2 + Punchy 3.2b'
 else:
-    before='../v1.5.3/punchy/punchy-after-first-right.png'
-    before_label='До — LudoCraft 1.5.3 + Punchy 3.2b'
+    parts = [int(v) for v in version.split('.')]
+    previous_version = f'{parts[0]}.{parts[1]}.{parts[2]-1}'
+    before=f'../v{previous_version}/punchy/punchy-after-first-right.png'
+    before_label=f'До — LudoCraft {previous_version} + Punchy 3.2b'
 frames=[(before,before_label),
         ('punchy/punchy-after-first-right.png','После — поза алмазной кирки'),
         ('punchy/punchy-after-first-left.png','Левая рука'),
@@ -25,5 +27,5 @@ for i,(file,title) in enumerate(frames):
     x=i%2*960;y=95+i//2*590
     d.text((x+16,y),title,font=f,fill='white');image=Image.open(root/file).convert('RGB');assert image.size==(960,540)
     sheet.paste(image,(x,y+38))
-d.text((24,1870),'Исходные кадры не ретушированы. До: 1.5.3; после: выживание с каменной мишенью.',font=small,fill='#c6d2e3')
+d.text((24,1870),f'Исходные кадры не ретушированы. До: предыдущая версия; после: выживание с каменной мишенью.',font=small,fill='#c6d2e3')
 sheet.save(root/'punchy-comparison.png')
