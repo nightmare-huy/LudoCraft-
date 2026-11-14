@@ -20,6 +20,7 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import ru.ludocraft.gameplay.OreGambling;
 import ru.ludocraft.item.GamblersPickaxeItem;
+import ru.ludocraft.network.SelectLudkaTarget;
 
 @Mod(LudoCraft.MOD_ID)
 public final class LudoCraft {
@@ -49,6 +50,7 @@ public final class LudoCraft {
         PARTICLES.register(modBus);
         MENUS.register(modBus);
         modBus.addListener(this::addCreativeItems);
+        modBus.addListener(SelectLudkaTarget::register);
         // Process the already calculated loot. Never recalculate loot or spawn a second vanilla drop.
         NeoForge.EVENT_BUS.addListener(EventPriority.LOW, OreGambling::onBlockDrops);
     }

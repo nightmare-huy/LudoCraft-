@@ -1,4 +1,18 @@
 {
   "replace": false,
-  "values": ["ludocraft:pocket_ludka"]
+  "values": [
+    "ludocraft:pocket_ludka",
+    "minecraft:barrier",
+    "minecraft:light",
+    "minecraft:command_block",
+    "minecraft:chain_command_block",
+    "minecraft:repeating_command_block",
+    "minecraft:command_block_minecart",
+    "minecraft:structure_block",
+    "minecraft:structure_void",
+    "minecraft:jigsaw",
+    "minecraft:debug_stick",
+    "minecraft:spawner",
+    "minecraft:trial_spawner"
+  ]
 }
