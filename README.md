@@ -94,6 +94,11 @@ Gradle Wrapper включён; отдельно устанавливать Gradl
 
 Workflow `.github/workflows/build.yml` собирает проект на Java 21 и сохраняет
 JAR как артефакт Actions после push/PR либо ручного запуска workflow.
+После успешной сборки основной ветки или `arena/70f21d2d-ludocraft` он также
+публикует JAR и `SHA256SUMS.txt` в **GitHub Releases** с тегом `v<mod_version>`.
+Из pull request и форков релизы не публикуются. Готовые релизы не перезаписываются:
+для следующего выпуска увеличьте `mod_version` в `gradle.properties` и отправьте изменения.
+Если релиз этой версии уже существует, новая сборка остаётся только артефактом Actions.
 
 ## Проверки
 
@@ -119,11 +124,11 @@ java -cp build/rule-tests ru.ludocraft.gameplay.GamblingRulesTest
 В `build` включены проверки `ruleTest`. JSON/TOML и локальные ссылки ресурсов
 также проверены отдельно. Запуск Minecraft и игровой smoke-test **ещё не выполнены**.
 
-[Скачать сборку: ZIP с ludocraft-1.0.0.jar](https://github.com/nightmare-huy/LudoCraft-/actions/runs/43545733499/artifacts/14094460574).
-Для скачивания артефакта нужно войти в GitHub; срок хранения — до 12 февраля 2027 года.
-Распакуйте архив и поместите именно `.jar`, а не ZIP, в папку `mods`.
-Локальная среда не имеет доступа к серверам зависимостей и хранилищу артефактов,
-поэтому готовый файл распространяется через GitHub Actions.
+**[Скачать ludocraft-1.0.0.jar](https://github.com/nightmare-huy/LudoCraft-/releases/download/v1.0.0/ludocraft-1.0.0.jar)** ·
+[Все релизы](https://github.com/nightmare-huy/LudoCraft-/releases).
+Вход в GitHub не требуется. Поместите скачанный `.jar` в `mods`.
+На странице релиза выбирайте JAR из Assets, а не архивы Source code.
+Файл `SHA256SUMS.txt` содержит контрольную сумму для проверки загрузки.
 
 ### Ручной smoke-test после сборки
 
