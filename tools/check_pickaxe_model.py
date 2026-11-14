@@ -70,6 +70,8 @@ def check():
             points = [rotate(tuple((c[i]-8)*transform['scale'][i] for i in range(3)), transform['rotation'])
                       for e in model['elements'] for c in product(*zip(e['from'], e['to']))]
             assert all(-8 <= p[i] + transform['translation'][i] <= 8 for p in points for i in (0,1)), f'{context} clips a 16px icon/frame'
+    from check_hand_poses import check_hand_poses
+    check_hand_poses(model, rotate)
     print(f'PASS: pickaxe JSON, {len(model["elements"])} quads, all 6 face directions, connected volume, exact closed surface, no overlapping faces, UV/texture and 8 poses')
     return model
 

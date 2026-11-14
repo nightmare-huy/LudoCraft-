@@ -6,6 +6,7 @@ import net.minecraft.client.CameraType;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
 import net.minecraft.client.gui.screens.TitleScreen;
+import net.minecraft.client.gui.screens.AccessibilityOnboardingScreen;
 import net.minecraft.client.resources.model.ModelResourceLocation;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.Difficulty;
@@ -43,7 +44,12 @@ public final class HandPoseClientTest {
         if (!enabled() || !baked) return;
         try {
             var mc = Minecraft.getInstance();
+            if (!started && mc.screen instanceof AccessibilityOnboardingScreen && mc.getOverlay() == null) {
+                mc.options.onboardingAccessibilityFinished();
+                mc.setScreen(new TitleScreen());
+            }
             if (!started && mc.screen instanceof TitleScreen && mc.getOverlay() == null) {
+                System.out.println("HAND_POSE_WORLD: creating deterministic world");
                 started = true;
                 mc.options.pauseOnLostFocus = false;
                 mc.options.renderDistance().set(2);
