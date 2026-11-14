@@ -30,6 +30,7 @@ import ru.ludocraft.LudoCraft;
 /** Dev-only deterministic world + real rendered hand views, not a model-only preview. */
 @EventBusSubscriber(modid = LudoCraft.MOD_ID, value = Dist.CLIENT)
 public final class HandPoseClientTest {
+    private static final boolean PUNCHY = Boolean.getBoolean("ludocraft.punchyTest");
     private static final String[] SHOTS = {"before-first-right", "after-first-right", "after-first-left",
             "after-third-front", "after-third-side", "after-third-left", "after-first-swing"};
     private static boolean baked, started, configured, capture;
@@ -50,6 +51,10 @@ public final class HandPoseClientTest {
             }
             if (!started && mc.screen instanceof TitleScreen && mc.getOverlay() == null) {
                 System.out.println("HAND_POSE_WORLD: creating deterministic world");
+                if (PUNCHY) {
+                    var mod = net.neoforged.fml.ModList.get().getModContainerById("punchy").orElseThrow();
+                    System.out.println("PUNCHY_RUNTIME_CONFIRMED: " + mod.getModInfo().getVersion());
+                }
                 started = true;
                 mc.options.pauseOnLostFocus = false;
                 mc.options.renderDistance().set(2);
@@ -85,7 +90,8 @@ public final class HandPoseClientTest {
             if (!mc.player.getMainHandItem().is(LudoCraft.GAMBLERS_PICKAXE.get())) return;
             float yaw = phase == 4 ? 90 : phase == 5 ? -35 : 0;
             mc.player.setYRot(yaw); mc.player.yRotO = yaw;
-            mc.player.setXRot(0); mc.player.xRotO = 0;
+            float pitch = PUNCHY && phase == 0 ? 25 : 0;
+            mc.player.setXRot(pitch); mc.player.xRotO = pitch;
             mc.player.yBodyRot = 0; mc.player.yBodyRotO = 0;
             mc.player.yHeadRot = yaw; mc.player.yHeadRotO = yaw;
             if (ticks == 0) configureView(mc);
@@ -102,9 +108,11 @@ public final class HandPoseClientTest {
             originalRotation = new org.joml.Vector3f(transform.rotation);
             originalTranslation = new org.joml.Vector3f(transform.translation);
             originalScale = new org.joml.Vector3f(transform.scale);
+            if (!PUNCHY) {
             transform.rotation.set(0, -90, 20);
             transform.translation.set(1.13F/16, 3.2F/16, 1.13F/16);
             transform.scale.set(.85F);
+            }
         } else {
             // Restore the ACTUAL baked JSON, never a separate hard-coded candidate pose.
             transform.rotation.set(originalRotation);
@@ -128,7 +136,7 @@ public final class HandPoseClientTest {
         try {
             var mc = Minecraft.getInstance();
             if (mc.screen != null || mc.player == null) throw new AssertionError("Screenshot would capture a loading screen");
-            Path output = Path.of("screenshots", "hand-" + SHOTS[phase] + ".png");
+            Path output = Path.of("screenshots", (PUNCHY ? "punchy-" : "hand-") + (PUNCHY && phase == 0 ? "looking-down" : SHOTS[phase]) + ".png");
             Files.createDirectories(output.getParent());
             try (var image = Screenshot.takeScreenshot(mc.getMainRenderTarget())) {
                 if (image.getWidth() < 900 || image.getHeight() < 500) throw new AssertionError("Bad framebuffer size");

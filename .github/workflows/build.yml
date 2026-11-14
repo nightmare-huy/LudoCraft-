@@ -93,28 +93,11 @@ jobs:
               assert not any('test-overrides' in n or n.endswith('.class') for n in z.namelist())
           print('::notice::Verified JAR opt-out marker, ZIP opt-in marker, format 48 and test-code exclusion.')
           PY
-      - name: Store actual in-game pose evidence on the working branch
-        if: github.event_name != 'pull_request' && github.ref == 'refs/heads/arena/70f21d2d-ludocraft'
-        run: |
-          mkdir -p docs/previews/v1.5.2
-          cp run/model-smoke/screenshots/hand-*.png docs/previews/v1.5.2/
-          python3 - <<'PY'
-          import json, os
-          from pathlib import Path
-          Path('docs/previews/v1.5.2/capture.json').write_text(json.dumps({
-              'source_commit': os.environ['GITHUB_SHA'],
-              'run_url': f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
-              'kind': 'Actual Minecraft 1.21.1 NeoForge world screenshots; Xvfb/Mesa; only LudoCraft installed',
-              'before': '1.5.1 first-person transform temporarily applied in memory; geometry identical',
-              'after': 'current exported transforms, fixed flat world, FOV 70, camera bob off'
-          }, indent=2) + '\n')
-          PY
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add docs/previews/v1.5.2/hand-*.png docs/previews/v1.5.2/capture.json
-          git commit -m 'Record actual in-game hand-pose captures [skip ci]'
-          # Never force or overwrite concurrent source edits; only push this session branch.
-          git push origin HEAD:arena/70f21d2d-ludocraft
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vanilla-hand-captures
+          path: run/model-smoke/screenshots/hand-*.png
+          if-no-files-found: error
       - uses: actions/upload-artifact@v4
         with:
           name: ludocraft-1.21.1

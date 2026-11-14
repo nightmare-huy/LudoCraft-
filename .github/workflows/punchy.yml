@@ -1,0 +1,62 @@
+name: Punchy 3.2b compatibility
+on:
+  push:
+    branches: [arena/70f21d2d-ludocraft]
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  inspect:
+    if: github.ref == 'refs/heads/arena/70f21d2d-ludocraft'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      LIBGL_ALWAYS_SOFTWARE: 'true'
+      ALSOFT_DRIVERS: 'null'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Fetch exact optional runtime
+        run: python3 tools/fetch_punchy.py
+      - name: Capture actual client with Punchy defaults
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libxi6 libxrender1 libxtst6
+          if ! timeout 480s xvfb-run -a -s '-screen 0 1280x720x24' ./gradlew runPunchySmokeClient --no-daemon > punchy-client.log 2>&1; then
+            tail -100 punchy-client.log
+            while IFS= read -r line; do
+              line="${line//'%'/'%25'}"
+              echo "::error::$line"
+            done < <(tail -45 punchy-client.log)
+            exit 1
+          fi
+          grep -Fq 'PUNCHY_RUNTIME_CONFIRMED: 3.2b' punchy-client.log
+          grep -Fq 'HAND_POSE_WORLD_PASS:' punchy-client.log
+          test "$(find run/punchy-smoke/screenshots -name 'punchy-*.png' | wc -l)" -eq 7
+      - name: Save evidence, not a release
+        if: always()
+        run: |
+          mkdir -p docs/previews/v1.5.3/punchy
+          cp run/punchy-inspection.txt docs/previews/v1.5.3/punchy/runtime-inspection.txt
+          if test -d run/punchy-smoke/screenshots; then
+            find run/punchy-smoke/screenshots -name 'punchy-*.png' -exec cp '{}' docs/previews/v1.5.3/punchy/ \;
+          fi
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          Path('docs/previews/v1.5.3/punchy/capture.json').write_text(json.dumps({
+              'source_commit': os.environ['GITHUB_SHA'],
+              'run_url': f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
+              'runtime': 'Minecraft 1.21.1, NeoForge 21.1.265, Punchy 3.2b, fresh default config',
+              'status': 'investigation only; image capture is not visual acceptance'
+          }, indent=2) + '\n')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/previews/v1.5.3/punchy
+          git commit -m 'Record Punchy compatibility investigation [skip ci]'
+          git push origin HEAD:arena/70f21d2d-ludocraft

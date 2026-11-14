@@ -95,13 +95,26 @@ tasks.register('evolutionPack', Zip) {
 }
 tasks.named('build') { dependsOn tasks.named('evolutionPack') }
 
-// Real client asset baking under Xvfb in CI; no world or gameplay automation.
+// Real client asset baking and deterministic world screenshots under Xvfb in CI.
 neoForge.runs {
     modelSmokeClient {
         client()
         gameDirectory = project.file('run/model-smoke')
         systemProperty 'ludocraft.modelSmokeTest', 'true'
         systemProperty 'ludocraft.handPoseTest', 'true'
+        programArguments.addAll('--width', '960', '--height', '540')
+    }
+}
+
+// Isolated optional compatibility runtime; Punchy is downloaded by tools/fetch_punchy.py.
+// Never a compile dependency, never included in the distributed LudoCraft JAR.
+neoForge.runs {
+    punchySmokeClient {
+        client()
+        gameDirectory = project.file('run/punchy-smoke')
+        systemProperty 'ludocraft.modelSmokeTest', 'true'
+        systemProperty 'ludocraft.handPoseTest', 'true'
+        systemProperty 'ludocraft.punchyTest', 'true'
         programArguments.addAll('--width', '960', '--height', '540')
     }
 }
