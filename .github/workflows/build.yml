@@ -71,6 +71,24 @@ jobs:
           test "$(find run/model-smoke/screenshots -name 'hand-*.png' | wc -l)" -eq 7
           .model-tools/bin/python tools/check_hand_captures.py
           echo '::notice::Real client: model bake and seven non-empty in-world hand/side/swing screenshots completed.'
+      - name: Preserve failed vanilla client evidence for diagnosis
+        if: failure() && github.ref == 'refs/heads/arena/70f21d2d-ludocraft'
+        run: |
+          DEST=docs/previews/punchy-grip-review/vanilla-client-diagnostic
+          mkdir -p "$DEST"
+          if test -f client-model-test.log; then
+            grep -E 'PASS|FAIL|Assertion|Error|bounds|HAND_POSE|PICKAXE' client-model-test.log > "$DEST/client-summary.txt" || true
+          fi
+          if test -d run/model-smoke/screenshots; then
+            cp run/model-smoke/screenshots/hand-*.png "$DEST/" 2>/dev/null || true
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEST"
+          git commit -m 'Preserve failed vanilla pickaxe view captures for diagnosis [skip ci]' || exit 0
+          git fetch origin arena/70f21d2d-ludocraft
+          git rebase origin/arena/70f21d2d-ludocraft
+          git push origin HEAD:arena/70f21d2d-ludocraft
       - name: Verify distributable contents
         run: |
           python3 - <<'PY'

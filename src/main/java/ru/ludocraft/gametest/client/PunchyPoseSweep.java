@@ -132,6 +132,10 @@ public final class PunchyPoseSweep {
         }
         diagnostic.add("customDisplay", customDisplay);
         diagnostic.add("vanillaDisplay", vanillaDisplay);
+        var specificMethod = Class.forName("punchy.client.render.ToolTuning").getMethod("hasSpecificProfile", ItemStack.class);
+        diagnostic.addProperty("heldItem", mc.player.getMainHandItem().getItem().toString());
+        diagnostic.addProperty("customHasSpecific", (Boolean) specificMethod.invoke(null, mc.player.getMainHandItem()));
+        diagnostic.addProperty("diamondHasSpecific", (Boolean) specificMethod.invoke(null, new ItemStack(Items.DIAMOND_PICKAXE)));
         Files.createDirectories(Path.of("screenshots"));
         Files.writeString(Path.of("screenshots", "punchy-transform-diagnostic.json"), diagnostic.toString());
         for (boolean left : new boolean[]{false, true}) {
@@ -141,8 +145,11 @@ public final class PunchyPoseSweep {
                 throw new AssertionError("Punchy did not apply shipped " + key + ": " + actual);
         }
         var method = Class.forName("punchy.client.render.ToolTuning").getMethod("hasSpecificProfile", ItemStack.class);
-        if (!(Boolean) method.invoke(null, mc.player.getMainHandItem()) || (Boolean) method.invoke(null, new ItemStack(Items.DIAMOND_PICKAXE)))
-            throw new AssertionError("Wrong item-specific profile scope");
+        boolean customSpecific = (Boolean) method.invoke(null, mc.player.getMainHandItem());
+        boolean diamondSpecific = (Boolean) method.invoke(null, new ItemStack(Items.DIAMOND_PICKAXE));
+        if (!customSpecific || diamondSpecific)
+            throw new AssertionError("Wrong item-specific profile scope: held=" + mc.player.getMainHandItem().getItem() +
+                    ", customSpecific=" + customSpecific + ", diamondSpecific=" + diamondSpecific);
         var custom = mc.getModelManager().getModel(ModelResourceLocation.inventory(LudoCraft.id("gamblers_pickaxe")));
         var vanilla = mc.getModelManager().getModel(ModelResourceLocation.inventory(ResourceLocation.withDefaultNamespace("diamond_pickaxe")));
         for (var context : new ItemDisplayContext[]{ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, ItemDisplayContext.FIRST_PERSON_LEFT_HAND}) {
