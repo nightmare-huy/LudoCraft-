@@ -1,0 +1,9 @@
+{
+  "item.ludocraft.gamblers_pickaxe": "Gambler's Pickaxe",
+  "message.ludocraft.loss": "Loser!",
+  "message.ludocraft.jackpot": "777! Jackpot! Drops ×%s!",
+  "tooltip.ludocraft.ore_only": "Gambling only applies to ores.",
+  "tooltip.ludocraft.loss": "85%: no drops or experience.",
+  "tooltip.ludocraft.jackpot": "15%: jackpot! Drops ×2–×5.",
+  "subtitles.ludocraft.jackpot_777": "777! Jackpot!"
+}

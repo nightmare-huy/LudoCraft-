@@ -1,0 +1,9 @@
+{
+  "item.ludocraft.gamblers_pickaxe": "Кирка Лудомании",
+  "message.ludocraft.loss": "Лох!",
+  "message.ludocraft.jackpot": "777! Джекпот! Дроп ×%s!",
+  "tooltip.ludocraft.ore_only": "Азартная механика действует только на руды.",
+  "tooltip.ludocraft.loss": "85%: ни дропа, ни опыта.",
+  "tooltip.ludocraft.jackpot": "15%: джекпот! Дроп ×2–×5.",
+  "subtitles.ludocraft.jackpot_777": "777! Джекпот!"
+}
