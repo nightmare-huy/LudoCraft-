@@ -39,7 +39,7 @@ public final class PunchyPoseSweep {
                     mc.player.setItemInHand(InteractionHand.MAIN_HAND, held);
                     Files.createDirectories(Path.of("screenshots"));
                     Files.writeString(Path.of("screenshots", "punchy-grip-profiles.json"),
-                            "{\"releasedRight\":" + baselineRight + ",\"releasedLeft\":" + baselineLeft + "}\\n");
+                            "{\"releasedRight\":" + baselineRight + ",\"releasedLeft\":" + baselineLeft + "}\n");
                 }
                 var right = baselineRight.deepCopy();
                 var left = baselineLeft.deepCopy();
