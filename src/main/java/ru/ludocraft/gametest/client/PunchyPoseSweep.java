@@ -97,7 +97,7 @@ public final class PunchyPoseSweep {
         for (var context : new ItemDisplayContext[]{ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, ItemDisplayContext.FIRST_PERSON_LEFT_HAND}) {
             var from = vanilla.getTransforms().getTransform(context);
             var to = custom.getTransforms().getTransform(context);
-            to.rotation.set(from.rotation); to.translation.set(from.translation); to.translation.x = 0;
+            to.rotation.set(from.rotation); to.translation.set(from.translation); to.translation.x = -2F / 16F;
             to.scale.set(from.scale).mul(.75F);
         }
     }
@@ -156,7 +156,7 @@ public final class PunchyPoseSweep {
         for (var context : new ItemDisplayContext[]{ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, ItemDisplayContext.FIRST_PERSON_LEFT_HAND}) {
             var actual = custom.getTransforms().getTransform(context);
             var reference = vanilla.getTransforms().getTransform(context);
-            var expectedTranslation = new org.joml.Vector3f(0, reference.translation.y, reference.translation.z);
+            var expectedTranslation = new org.joml.Vector3f(-2F / 16F, reference.translation.y, reference.translation.z);
             if (!actual.rotation.equals(reference.rotation, .0001F) || !actual.translation.equals(expectedTranslation, .0001F) ||
                     !actual.scale.equals(new org.joml.Vector3f(reference.scale).mul(.75F), .0001F))
                 throw new AssertionError("LudoCraft pose differs from compact vanilla diamond pickaxe reference for " + context +
