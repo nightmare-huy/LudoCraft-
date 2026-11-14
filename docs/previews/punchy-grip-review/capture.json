@@ -1,0 +1,7 @@
+{
+  "source_commit": "7a418fecfa8cc27beb9d659496520e6bc6954b5c",
+  "run_url": "https://github.com/nightmare-huy/LudoCraft-/actions/runs/43577627221",
+  "runtime": "Minecraft 1.21.1, NeoForge 21.1.265, Punchy 3.2b defaults",
+  "status": "Unpublished development probes, awaiting visual review; not a release",
+  "scope": "Only temporary test resource packs; shipped model and compatibility JSON unchanged"
+}
