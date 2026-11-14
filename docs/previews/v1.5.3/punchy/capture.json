@@ -1,6 +1,7 @@
 {
-  "source_commit": "57f9eeada30a1afeea3947756f6310479eba4e19",
-  "run_url": "https://github.com/nightmare-huy/LudoCraft-/actions/runs/43575541126",
+  "source_commit": "9d5a79c166e374bdf411bc2814d6cd47271ca7b9",
+  "run_url": "https://github.com/nightmare-huy/LudoCraft-/actions/runs/43575890989",
   "runtime": "Minecraft 1.21.1, NeoForge 21.1.265, Punchy 3.2b, fresh default config",
-  "status": "investigation only; image capture is not visual acceptance"
+  "status": "automated capture; visual review is separate",
+  "mode": "survival: idle, both hands, F5, attack key mining and recovery"
 }
