@@ -3,12 +3,9 @@ package ru.ludocraft;
 import net.minecraft.core.particles.ParticleType;
 import net.minecraft.core.particles.SimpleParticleType;
 import net.minecraft.core.registries.Registries;
-import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.CreativeModeTabs;
-import net.minecraft.world.item.EnchantedBookItem;
-import net.minecraft.world.item.enchantment.EnchantmentInstance;
 import net.minecraft.world.inventory.MenuType;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import ru.ludocraft.menu.LudkaMenu;
@@ -72,12 +69,6 @@ public final class LudoCraft {
     }
 
     private void addCreativeItems(BuildCreativeModeTabContentsEvent event) {
-        if (event.getTabKey() == CreativeModeTabs.INGREDIENTS) {
-            var enchantment = event.getParameters().holders().lookupOrThrow(Registries.ENCHANTMENT)
-                    .get(ResourceKey.create(Registries.ENCHANTMENT, id("gambling")));
-            enchantment.ifPresent(holder -> event.accept(EnchantedBookItem.createForEnchantment(
-                    new EnchantmentInstance(holder, 1))));
-        }
         if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(GAMBLERS_PICKAXE);
             event.accept(VIP_GAMBLERS_PICKAXE);

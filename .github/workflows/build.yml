@@ -242,11 +242,11 @@ jobs:
           test -s "release/$preset"
           (cd release && sha256sum "$jar" "$preset" > SHA256SUMS.txt)
           cat > release/notes.md <<'NOTES'
-          ## LudoCraft ${VERSION} — Gambling enchantment
+          ## LudoCraft ${VERSION} — Gambling enchantment and inventory fix
 
           **Minecraft Java 1.21.1 · NeoForge 21.1.265 · Java 21**
 
-          Adds the data-driven **Gambling I–III** enchantment for vanilla and modded pickaxes in `#minecraft:pickaxes`. It is available from enchanting, librarian trades, random enchantment loot, and the creative enchanted-book inventory. Gambler’s, VIP Gambler’s, and Highroller pickaxes are explicitly excluded from both table and anvil application.
+          Adds the data-driven **Gambling I–III** enchantment for vanilla and modded pickaxes in `#minecraft:pickaxes`. It is available from enchanting, librarian trades, random enchantment loot, and the creative enchanted-book inventory. Gambler’s, VIP Gambler’s, and Highroller pickaxes are explicitly excluded from both table and anvil application. This release fixes the inventory-open crash by relying on vanilla creative-tab generation for enchanted books instead of manually inserting a duplicate.
 
           - I: 85% loss of ore drops and XP, otherwise drops ×2–×5.
           - II: 75% loss, otherwise drops ×3–×8.
