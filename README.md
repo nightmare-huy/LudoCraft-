@@ -22,6 +22,11 @@
 **[3D-превью и подробности проверок](docs/previews/v1.5.1/README.md)** ·
 **[Скачать JAR 1.5.1](https://github.com/nightmare-huy/LudoCraft-/releases/download/v1.5.1/ludocraft-1.5.1.jar)**
 
+**Проверено в 1.5.1:** [сборка 43570895140](https://github.com/nightmare-huy/LudoCraft-/actions/runs/43570895140)
+успешна: модель выпечена настоящим Minecraft-клиентом в Xvfb, проверены текстура,
+241 грань и display-контексты; также пройдены 8+2 серверных GameTests.
+[Релиз и SHA256SUMS](https://github.com/nightmare-huy/LudoCraft-/releases/tag/v1.5.1).
+
 ## 1.5.0 — первый баланс под FTB Evolution 1.47.0
 
 Добавлен **отдельный включаемый профиль**, основанный на официальном manifest

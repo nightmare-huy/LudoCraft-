@@ -6,6 +6,12 @@
 Геометрия и UV читаются из экспортированной модели; изображение строится отдельным
 простым рендерером с Z-буфером. Освещение отличается от Minecraft.
 
+**Подтверждённый результат:** [Actions 43570895140](https://github.com/nightmare-huy/LudoCraft-/actions/runs/43570895140)
+успешно прошёл для `6ecfecff5e8df8dd5f0900fe12b9cad14a771942`:
+структурные проверки, реальный клиентский bake-test, 8 обычных + 2 Evolution
+GameTests и проверка включения именно этих JSON/PNG в JAR.
+[JAR 1.5.1 опубликован](https://github.com/nightmare-huy/LudoCraft-/releases/download/v1.5.1/ludocraft-1.5.1.jar).
+
 ## Что изменилось
 
 - Вместо плоской `item/handheld`-иконки — собственная объёмная геометрия.
