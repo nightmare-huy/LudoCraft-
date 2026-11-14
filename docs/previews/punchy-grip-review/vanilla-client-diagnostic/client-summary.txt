@@ -1,4 +1,4 @@
-[09:31:08] [Render thread/ERROR] [mojang/Narrator]: Error while loading the narrator
+[09:36:53] [Render thread/ERROR] [mojang/Narrator]: Error while loading the narrator
 Caused by: java.lang.UnsatisfiedLinkError: Unable to load library 'flite':
 	Suppressed: java.lang.UnsatisfiedLinkError: libflite.so: cannot open shared object file: No such file or directory
 	Suppressed: java.lang.UnsatisfiedLinkError: libflite.so: cannot open shared object file: No such file or directory
