@@ -24,7 +24,18 @@ jobs:
             exit 1
           }
           echo "version=$version" >> "$GITHUB_OUTPUT"
-      - run: ./gradlew build --no-daemon
+      - name: Build and test
+        shell: bash
+        run: |
+          if ! ./gradlew build runGameTestServer --no-daemon > build-output.log 2>&1; then
+            tail -80 build-output.log
+            while IFS= read -r line; do
+              line="${line//'%'/'%25'}"
+              echo "::error::$line"
+            done < <(tail -45 build-output.log)
+            exit 1
+          fi
+          cat build-output.log
       - uses: actions/upload-artifact@v4
         with:
           name: ludocraft-1.21.1
@@ -68,18 +79,20 @@ jobs:
           test -s "release/$jar"
           (cd release && sha256sum "$jar" > SHA256SUMS.txt)
           cat > release/notes.md <<'NOTES'
-          ## Кирка Лудомании
+          ## LudoCraft — Кирка Лудомании и Карманная Лудка
 
           **Minecraft Java 1.21.1 · NeoForge 21.1.265+ для 1.21.1 · Java 21**
 
           Скачайте `ludocraft-*.jar` из Assets и положите его в папку `mods` клиента и сервера. Архивы Source code для установки не нужны.
 
-          Получение: `/give @s ludocraft:gamblers_pickaxe`.
+          Получение: `/give @s ludocraft:gamblers_pickaxe` и `/give @s ludocraft:pocket_ludka`.
           Проверяйте механику в выживании, не в творческом режиме.
 
           Алмазная кирка: 85% — без предметов и опыта, 15% — дроп ×2–×5, звук «777», конфетти и визуальные фейерверки.
 
-          Собрано Gradle на Java 21, автоматические проверки входят в сборку. Ручная проверка в Minecraft пока не выполнена.
+          Карманная Лудка: ПКМ открывает процедурный GUI, два слота, риски 50%/25%/10%/5%, трёхсекундная рулетка и серверные награды. Один предмет за попытку; выход скрыт и заблокирован до завершения.
+
+          Собрано Gradle на Java 21. Пройдены проверки вероятностей/анимации и серверные GameTests. Ручная проверка отрисовки GUI и звука в клиенте пока не выполнена.
           NOTES
           gh release create "$tag" "release/$jar" release/SHA256SUMS.txt \
             --repo "$GH_REPO" --target "$GITHUB_SHA" \

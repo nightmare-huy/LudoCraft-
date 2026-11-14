@@ -44,3 +44,14 @@ if __name__ == '__main__':
         for y in range(1, 7):
             image.putpixel((x, y), (255, 255, 255, 255))
     image.save(ROOT / 'particle/confetti.png')
+
+    # Pocket casino device; the actual GUI deliberately has no texture assets.
+    image = Image.new('RGBA', (16, 16))
+    from PIL import ImageDraw
+    draw = ImageDraw.Draw(image)
+    draw.rectangle((2, 1, 13, 14), fill='#16161d', outline='#a578ff')
+    draw.rectangle((4, 3, 11, 9), fill='#2c233a', outline='#ffd76a')
+    draw.line([(6, 5), (9, 5), (7, 8)], fill='#ffd76a', width=1)
+    draw.rectangle((4, 11, 7, 12), fill='#27bb7c')
+    draw.rectangle((9, 11, 11, 12), fill='#b63853')
+    image.save(ROOT / 'item/pocket_ludka.png')

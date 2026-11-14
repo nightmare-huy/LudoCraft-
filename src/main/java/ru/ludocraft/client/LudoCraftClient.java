@@ -4,6 +4,7 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
 import net.neoforged.neoforge.client.event.RegisterParticleProvidersEvent;
+import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import ru.ludocraft.LudoCraft;
 
 /** Loaded only on the physical client; no net.minecraft.client references on a dedicated server. */
@@ -11,6 +12,11 @@ import ru.ludocraft.LudoCraft;
 public final class LudoCraftClient {
     public LudoCraftClient(IEventBus modBus) {
         modBus.addListener(this::registerParticles);
+        modBus.addListener(this::registerScreens);
+    }
+
+    private void registerScreens(RegisterMenuScreensEvent event) {
+        event.register(LudoCraft.LUDKA_MENU.get(), LudkaScreen::new);
     }
 
     private void registerParticles(RegisterParticleProvidersEvent event) {

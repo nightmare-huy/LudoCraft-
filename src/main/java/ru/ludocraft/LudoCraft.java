@@ -6,6 +6,10 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.world.item.CreativeModeTabs;
+import net.minecraft.world.inventory.MenuType;
+import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
+import ru.ludocraft.menu.LudkaMenu;
+import ru.ludocraft.item.PocketLudkaItem;
 import net.neoforged.bus.api.EventPriority;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.common.Mod;
@@ -24,6 +28,12 @@ public final class LudoCraft {
     public static final DeferredRegister<SoundEvent> SOUNDS = DeferredRegister.create(Registries.SOUND_EVENT, MOD_ID);
     public static final DeferredRegister<ParticleType<?>> PARTICLES = DeferredRegister.create(Registries.PARTICLE_TYPE, MOD_ID);
 
+    public static final DeferredRegister<MenuType<?>> MENUS = DeferredRegister.create(Registries.MENU, MOD_ID);
+    public static final DeferredHolder<MenuType<?>, MenuType<LudkaMenu>> LUDKA_MENU =
+            MENUS.register("ludka", () -> IMenuTypeExtension.create((id, inventory, data) -> new LudkaMenu(id, inventory)));
+    public static final DeferredItem<PocketLudkaItem> POCKET_LUDKA =
+            ITEMS.registerItem("pocket_ludka", PocketLudkaItem::new);
+
     public static final DeferredItem<GamblersPickaxeItem> GAMBLERS_PICKAXE =
             ITEMS.registerItem("gamblers_pickaxe", GamblersPickaxeItem::new);
     public static final DeferredHolder<SoundEvent, SoundEvent> JACKPOT_SOUND =
@@ -37,6 +47,7 @@ public final class LudoCraft {
         ITEMS.register(modBus);
         SOUNDS.register(modBus);
         PARTICLES.register(modBus);
+        MENUS.register(modBus);
         modBus.addListener(this::addCreativeItems);
         // Process the already calculated loot. Never recalculate loot or spawn a second vanilla drop.
         NeoForge.EVENT_BUS.addListener(EventPriority.LOW, OreGambling::onBlockDrops);
@@ -49,6 +60,7 @@ public final class LudoCraft {
     private void addCreativeItems(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(GAMBLERS_PICKAXE);
+            event.accept(POCKET_LUDKA);
         }
     }
 }

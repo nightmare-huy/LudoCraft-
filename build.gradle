@@ -15,6 +15,10 @@ neoForge {
     version = project.neo_version
     runs {
         client { client() }
+        gameTestServer {
+            type = 'gameTestServer'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
         server {
             server()
             programArgument '--nogui'
@@ -58,3 +62,9 @@ neoForge.ideSyncTask generateModMetadata
 
 tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
 idea.module { downloadSources = true }
+
+// Integration tests run from the development classpath, not in the distributed mod.
+tasks.named('jar', Jar) {
+    exclude 'ru/ludocraft/gametest/**'
+    exclude 'data/ludocraft/structure/ludka_test.nbt'
+}
