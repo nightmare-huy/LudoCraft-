@@ -25,7 +25,7 @@ public final class LudkaMenu extends AbstractContainerMenu {
     private final DataSlot ack = DataSlot.standalone();
     private long unlockTick;
     private int nextRound;
-    private boolean removed;
+    private boolean serverClosed;
     // Client presentation state lives on the menu so resizing the screen cannot reveal/restart a spin.
     private boolean clientPending;
     private long clientStart;
@@ -37,7 +37,11 @@ public final class LudkaMenu extends AbstractContainerMenu {
         owner = inventory.player;
         roll.set(-1);
         addSlot(new Slot(storage, INPUT, 24, 38) {
-            @Override public boolean mayPlace(ItemStack stack) { return !isBusy() && LudkaRewards.accepts(stack); }
+            @Override public boolean mayPlace(ItemStack stack) {
+                // Insertion is NOT a wager. Let the user inspect unsupported items in the GUI;
+                // canStart/clickMenuButton validate the actual bet on both sides.
+                return !isBusy() && !stack.isEmpty() && !stack.is(LudoCraft.POCKET_LUDKA.get());
+            }
             @Override public boolean mayPickup(Player player) { return !isBusy(); }
         });
         addSlot(new Slot(storage, OUTPUT, 260, 38) {
@@ -74,8 +78,11 @@ public final class LudkaMenu extends AbstractContainerMenu {
     public double clientProgress() {
         return Math.clamp((System.nanoTime() - clientStart) / (double) LudkaRules.SPIN_NANOS, 0.0, 1.0);
     }
+    public boolean unsupportedInput() {
+        return !storage.getItem(INPUT).isEmpty() && !LudkaRewards.accepts(storage.getItem(INPUT));
+    }
     public boolean canStart() {
-        return !removed && !isBusy() && LudkaRewards.accepts(storage.getItem(INPUT))
+        return !serverClosed && !isBusy() && LudkaRewards.accepts(storage.getItem(INPUT))
                 && storage.getItem(OUTPUT).isEmpty();
     }
     public void beginClientRequest() {
@@ -103,7 +110,7 @@ public final class LudkaMenu extends AbstractContainerMenu {
 
     @Override
     public boolean clickMenuButton(Player player, int button) {
-        if (player != owner || player.containerMenu != this || removed || player.isSpectator()
+        if (player != owner || player.containerMenu != this || serverClosed || player.isSpectator()
                 || !(player.level() instanceof ServerLevel level)) return false;
         if (button >= 0 && button < 4) {
             if (isBusy()) return false;
@@ -149,21 +156,24 @@ public final class LudkaMenu extends AbstractContainerMenu {
     @Override
     public void clicked(int slot, int button, ClickType type, Player player) {
         // Covers number keys, Q, double-click collection, drag, offhand swap and creative clone.
-        if (player != owner || removed || isBusy()) return;
+        if (player != owner || serverClosed || isBusy()) return;
         super.clicked(slot, button, type, player);
     }
 
     @Override
     public ItemStack quickMoveStack(Player player, int index) {
-        if (player != owner || removed || isBusy() || index < 0 || index >= slots.size()) return ItemStack.EMPTY;
+        if (player != owner || serverClosed || isBusy() || index < 0 || index >= slots.size()) return ItemStack.EMPTY;
         Slot slot = slots.get(index);
         if (!slot.hasItem() || !slot.mayPickup(player)) return ItemStack.EMPTY;
         ItemStack stack = slot.getItem();
         ItemStack original = stack.copy();
         if (index < 2) {
             if (!moveItemStackTo(stack, 2, 38, true)) return ItemStack.EMPTY;
-        } else if (!LudkaRewards.accepts(stack) || !moveItemStackTo(stack, INPUT, INPUT + 1, false)) {
-            return ItemStack.EMPTY;
+        } else if (!moveItemStackTo(stack, INPUT, INPUT + 1, false)) {
+            // Full/incompatible input: keep vanilla main-inventory <-> hotbar routing usable.
+            if (index < 29) {
+                if (!moveItemStackTo(stack, 29, 38, false)) return ItemStack.EMPTY;
+            } else if (!moveItemStackTo(stack, 2, 29, false)) return ItemStack.EMPTY;
         }
         if (stack.isEmpty()) slot.setByPlayer(ItemStack.EMPTY);
         else slot.setChanged();
@@ -171,12 +181,19 @@ public final class LudkaMenu extends AbstractContainerMenu {
         return original;
     }
 
-    @Override public boolean stillValid(Player player) { return player == owner && player.isAlive() && !removed; }
+    @Override public boolean stillValid(Player player) { return player == owner && player.isAlive() && !serverClosed; }
 
     @Override
     public void removed(Player player) {
-        if (removed) return;
-        removed = true;
+        // A client screen can be temporarily removed/replaced by an overlay mod and then
+        // reused. It must never permanently disable that client's inventory prediction.
+        // Only an actual server menu close finalizes/refunds the transaction.
+        if (player.level().isClientSide) {
+            super.removed(player);
+            return;
+        }
+        if (serverClosed) return;
+        serverClosed = true;
         super.removed(player);
         // Closing, disconnecting or dying never rerolls or destroys an already awarded prize.
         // The item cooldown survives closing, so reopening cannot accelerate gambling.

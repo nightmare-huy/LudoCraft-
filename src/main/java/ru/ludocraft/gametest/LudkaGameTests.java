@@ -3,6 +3,14 @@ package ru.ludocraft.gametest;
 import com.mojang.authlib.GameProfile;
 import java.util.UUID;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.chat.Component;
+import net.minecraft.world.inventory.AbstractContainerMenu;
+import net.minecraft.world.item.component.CustomData;
+import net.minecraft.world.item.enchantment.EnchantmentHelper;
+import net.minecraft.world.item.enchantment.Enchantments;
+import ru.ludocraft.gameplay.LudkaCompatibility;
 import net.minecraft.gametest.framework.GameTest;
 import net.minecraft.gametest.framework.GameTestHelper;
 import net.minecraft.util.RandomSource;
@@ -80,7 +88,7 @@ public final class LudkaGameTests {
         LudkaMenu m = menu(p);
         h.assertTrue(!m.clickMenuButton(p, -1) && !m.clickMenuButton(p, 5), "Unknown ID accepted");
         h.assertTrue(!m.clickMenuButton(p, 4), "Empty wager accepted");
-        h.assertTrue(!m.getSlot(0).mayPlace(new ItemStack(Items.DIRT)), "Dirt accepted");
+        h.assertTrue(m.getSlot(0).mayPlace(new ItemStack(Items.DIRT)), "Inspection slot must accept an unsupported item");
         m.getSlot(0).set(new ItemStack(Items.DIRT)); // Even forged slot contents must be revalidated.
         h.assertTrue(!m.clickMenuButton(p, 4), "Server accepted dirt");
         m.getSlot(0).set(new ItemStack(Items.DIAMOND, 2));
@@ -143,4 +151,93 @@ public final class LudkaGameTests {
         for (boolean valid : found) h.assertTrue(valid, "Missing jackpot outcome");
         h.succeed();
     }
+    @GameTest(template = "ludka_test")
+    public static void actualInventoryClicksAndShiftTransfer(GameTestHelper h) {
+        FakePlayer p = player(h);
+        LudkaMenu m = menu(p);
+        p.getInventory().setItem(9, new ItemStack(Items.DIAMOND, 3));
+        m.clicked(2, 0, ClickType.PICKUP, p); // Pick up from the first visible inventory slot.
+        h.assertTrue(m.getCarried().getCount() == 3, "Cannot pick up an inventory item");
+        m.clicked(0, 0, ClickType.PICKUP, p); // Place via the same path as a real client packet.
+        h.assertTrue(m.getCarried().isEmpty() && m.getSlot(0).getItem().getCount() == 3, "Left-click cannot insert diamonds");
+        h.assertTrue(m.canStart(), "Valid inserted wager cannot start");
+        m.clicked(0, 1, ClickType.PICKUP, p);
+        h.assertTrue(m.getCarried().getCount() == 2 && m.getSlot(0).getItem().getCount() == 1, "Right-click split failed");
+        m.clicked(0, 0, ClickType.PICKUP, p);
+        m.clicked(0, 0, ClickType.QUICK_MOVE, p);
+        h.assertTrue(m.getSlot(0).getItem().isEmpty() && p.getInventory().countItem(Items.DIAMOND) == 3, "Shift return lost items");
+        // The hotbar's first slot corresponds to menu slot 29.
+        p.getInventory().setItem(0, new ItemStack(Items.IRON_PICKAXE));
+        m.clicked(29, 0, ClickType.QUICK_MOVE, p);
+        h.assertTrue(m.getSlot(0).getItem().is(Items.IRON_PICKAXE), "Shift insert failed");
+        m.clicked(0, 0, ClickType.PICKUP, p);
+        m.clicked(2, 0, ClickType.PICKUP, p);
+        // Number-key swap into the input (same path as hotbar keyboard shortcuts).
+        p.getInventory().setItem(0, new ItemStack(Items.EMERALD, 2));
+        m.clicked(0, 0, ClickType.SWAP, p);
+        h.assertTrue(m.getSlot(0).getItem().is(Items.EMERALD), "Hotbar swap failed");
+        m.clicked(0, 0, ClickType.PICKUP, p);
+        h.assertTrue(m.getCarried().getCount() == 2, "Cannot retrieve input");
+        m.clicked(-999, AbstractContainerMenu.getQuickcraftMask(0, 0), ClickType.QUICK_CRAFT, p);
+        m.clicked(0, AbstractContainerMenu.getQuickcraftMask(1, 0), ClickType.QUICK_CRAFT, p);
+        m.clicked(-999, AbstractContainerMenu.getQuickcraftMask(2, 0), ClickType.QUICK_CRAFT, p);
+        h.assertTrue(m.getCarried().isEmpty() && m.getSlot(0).getItem().getCount() == 2, "Drag insert failed");
+        m.removed(p);
+        h.succeed();
+    }
+
+    @GameTest(template = "ludka_test")
+    public static void acceptsModToolAndPreservesComponents(GameTestHelper h) {
+        FakePlayer p = player(h);
+        LudkaMenu m = menu(p);
+        ItemStack modTool = new ItemStack(LudoCraft.GAMBLERS_PICKAXE.get());
+        modTool.setDamageValue(140);
+        modTool.set(DataComponents.CUSTOM_NAME, Component.literal("Mod tool fixture"));
+        CompoundTag data = new CompoundTag();
+        data.putInt("energy", 12345);
+        data.putString("owner", "test-owner");
+        modTool.set(DataComponents.CUSTOM_DATA, CustomData.of(data));
+        var enchants = h.getLevel().registryAccess().registryOrThrow(Registries.ENCHANTMENT);
+        var silk = enchants.getHolderOrThrow(Enchantments.SILK_TOUCH);
+        var fortune = enchants.getHolderOrThrow(Enchantments.FORTUNE);
+        modTool.enchant(silk, 1);
+        h.assertTrue(LudkaRewards.accepts(modTool), "Non-vanilla registry item rejected");
+        m.setCarried(modTool.copy());
+        m.clicked(0, 0, ClickType.PICKUP, p);
+        h.assertTrue(m.canStart(), "Mod tool cannot be inserted/wagered");
+        ItemStack prize = LudkaRewards.create(h.getLevel(), modTool, 2);
+        h.assertTrue(prize.is(modTool.getItem()) && prize.getCount() == 1, "Mod tool converted into vanilla/duplicated");
+        h.assertTrue(prize.getDamageValue() == 0 && modTool.getDamageValue() == 140, "Repair mutated input or failed");
+        h.assertTrue(prize.get(DataComponents.CUSTOM_NAME).equals(modTool.get(DataComponents.CUSTOM_NAME)), "Custom name lost");
+        h.assertTrue(prize.get(DataComponents.CUSTOM_DATA).equals(modTool.get(DataComponents.CUSTOM_DATA)), "Mod data lost");
+        h.assertTrue(EnchantmentHelper.getItemEnchantmentLevel(silk, prize) == 1, "Existing enchantment lost");
+        h.assertTrue(EnchantmentHelper.getItemEnchantmentLevel(fortune, prize) == 0, "Incompatible enchantment added");
+        m.removed(p);
+        h.succeed();
+    }
+
+    @GameTest(template = "ludka_test")
+    public static void commonTagsAndBlacklist(GameTestHelper h) {
+        for (var item : new net.minecraft.world.item.Item[]{Items.IRON_INGOT, Items.AMETHYST_SHARD,
+                Items.NETHERITE_PICKAXE, Items.BOW, Items.SHIELD}) {
+            h.assertTrue(LudkaRewards.accepts(new ItemStack(item)), "Common resource/equipment rejected: " + item);
+        }
+        ItemStack ingot = new ItemStack(Items.IRON_INGOT);
+        h.assertTrue(ingot.is(LudkaCompatibility.INPUTS), "Common tag was not loaded");
+        ItemStack prize = LudkaRewards.create(h.getLevel(), ingot, 1);
+        h.assertTrue(prize.is(Items.IRON_INGOT) && prize.getCount() == 4, "Resource identity/count changed");
+        ItemStack pocket = new ItemStack(LudoCraft.POCKET_LUDKA.get());
+        h.assertTrue(pocket.is(LudkaCompatibility.BLACKLIST) && !LudkaRewards.accepts(pocket), "Blacklist ignored");
+        FakePlayer p = player(h);
+        LudkaMenu m = menu(p);
+        m.setCarried(new ItemStack(Items.DIRT, 7));
+        m.clicked(0, 0, ClickType.PICKUP, p);
+        h.assertTrue(m.getSlot(0).getItem().getCount() == 7 && m.unsupportedInput(), "Cannot inspect unsupported input");
+        h.assertTrue(!m.clickMenuButton(p, 4) && m.getSlot(0).getItem().getCount() == 7, "Unsupported wager burned items");
+        m.clicked(0, 0, ClickType.QUICK_MOVE, p);
+        h.assertTrue(p.getInventory().countItem(Items.DIRT) == 7, "Cannot take unsupported input back");
+        m.removed(p);
+        h.succeed();
+    }
+
 }

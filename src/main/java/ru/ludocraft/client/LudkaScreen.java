@@ -62,6 +62,10 @@ public final class LudkaScreen extends AbstractContainerScreen<LudkaMenu> {
         super.render(graphics, mouseX, mouseY, partialTick);
         // Inactive output slots are neither rendered nor hovered by AbstractContainerScreen.
         renderTooltip(graphics, mouseX, mouseY);
+        if (!menu.isBusy() && isHovering(24, 38, 16, 16, mouseX, mouseY)
+                && !menu.getSlot(LudkaMenu.INPUT).hasItem() && menu.getCarried().isEmpty()) {
+            graphics.renderTooltip(font, Component.translatable("screen.ludocraft.input_hint"), mouseX, mouseY);
+        }
     }
 
     @Override
@@ -82,6 +86,9 @@ public final class LudkaScreen extends AbstractContainerScreen<LudkaMenu> {
         else if (menu.hasResult()) {
             status = Component.translatable(menu.won() ? "screen.ludocraft.win" : "screen.ludocraft.loss", menu.roll());
             color = menu.won() ? GREEN : RED;
+        } else if (menu.unsupportedInput()) {
+            status = Component.translatable("screen.ludocraft.unsupported");
+            color = RED;
         } else status = Component.translatable("screen.ludocraft.choose");
         g.drawCenteredString(font, status, x + 150, y + 39, color);
         g.drawCenteredString(font, Component.translatable("screen.ludocraft.one_item"), x + 150, y + 52, 0xFF777286);

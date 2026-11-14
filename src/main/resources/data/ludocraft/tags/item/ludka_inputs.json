@@ -1,0 +1,12 @@
+{
+  "replace": false,
+  "values": [
+    "minecraft:diamond",
+    "minecraft:emerald",
+    { "id": "#c:tools", "required": false },
+    { "id": "#c:armors", "required": false },
+    { "id": "#c:gems", "required": false },
+    { "id": "#c:ingots", "required": false },
+    { "id": "#minecraft:enchantable/durability", "required": false }
+  ]
+}

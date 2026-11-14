@@ -45,13 +45,38 @@ if __name__ == '__main__':
             image.putpixel((x, y), (255, 255, 255, 255))
     image.save(ROOT / 'particle/confetti.png')
 
-    # Pocket casino device; the actual GUI deliberately has no texture assets.
-    image = Image.new('RGBA', (16, 16))
+    # 32px pocket slot machine: brass housing, three red sevens, lever and coin tray.
+    # GUI remains texture-free; this is only the item icon held by the player.
+    image = Image.new('RGBA', (32, 32))
     from PIL import ImageDraw
     draw = ImageDraw.Draw(image)
-    draw.rectangle((2, 1, 13, 14), fill='#16161d', outline='#a578ff')
-    draw.rectangle((4, 3, 11, 9), fill='#2c233a', outline='#ffd76a')
-    draw.line([(6, 5), (9, 5), (7, 8)], fill='#ffd76a', width=1)
-    draw.rectangle((4, 11, 7, 12), fill='#27bb7c')
-    draw.rectangle((9, 11, 11, 12), fill='#b63853')
+    draw.rectangle((3, 4, 25, 28), fill='#2a1626', outline='#100e19')
+    draw.rectangle((5, 2, 23, 4), fill='#ffd66a', outline='#7a4023')
+    draw.rectangle((4, 5, 24, 26), fill='#9c5429')
+    draw.rectangle((5, 5, 23, 25), fill='#eeb64b')
+    draw.line((5, 5, 23, 5), fill='#fff0a6')
+    draw.rectangle((6, 7, 22, 19), fill='#231b30', outline='#7d4028')
+    for x in (7, 12, 17):
+        draw.rectangle((x, 9, x + 3, 17), fill='#eadab7')
+        draw.line((x, 9, x + 3, 9), fill='#fff8dd')
+        seven = ['111', '001', '010', '010', '010']
+        for dy, row in enumerate(seven):
+            for dx, pixel in enumerate(row):
+                if pixel == '1': draw.point((x + dx, 11 + dy), fill='#bd2549')
+    draw.line((7, 8, 20, 8), fill='#66ecdc')
+    draw.rectangle((7, 21, 13, 23), fill='#342034', outline='#7d4028')
+    draw.rectangle((16, 21, 21, 23), fill='#146c65')
+    draw.line((17, 21, 20, 21), fill='#68f5c5')
+    draw.rectangle((7, 26, 21, 29), fill='#100e19')
+    draw.rectangle((8, 26, 20, 27), fill='#795143')
+    draw.line((9, 28, 19, 28), fill='#d99b38')
+    draw.rectangle((24, 14, 28, 17), fill='#593c3d', outline='#100e19')
+    draw.rectangle((27, 7, 28, 15), fill='#b9a1b9')
+    draw.line((27, 8, 27, 14), fill='#fff2cd')
+    draw.rectangle((26, 4, 29, 7), fill='#84223f', outline='#251329')
+    draw.rectangle((27, 4, 28, 5), fill='#ff6683')
+    draw.point((5, 6), fill='#ffffff')
+    draw.point((23, 6), fill='#fff0a6')
+    draw.point((5, 24), fill='#fff0a6')
+    draw.point((23, 24), fill='#fff0a6')
     image.save(ROOT / 'item/pocket_ludka.png')

@@ -21,8 +21,11 @@
   "screen.ludocraft.loss": "BURNED! Rolled %s",
   "screen.ludocraft.one_item": "1 item per attempt",
   "screen.ludocraft.chance": "Chance: %s%%",
-  "screen.ludocraft.risk_0": "50% · x2 · Iron → diamond, diamond → netherite. Gems → 1–2 diamonds.",
-  "screen.ludocraft.risk_1": "25% · x4 · Iron → netherite. Diamond gear → netherite + a random enchantment. Gems → 4 diamonds.",
-  "screen.ludocraft.risk_2": "10% · x10 · Strongly enchanted netherite gear. Gems → netherite ingot or enchanted golden apple.",
-  "screen.ludocraft.risk_3": "5% · x20 · MAX RISK! Elytra, nether star, mace or a named Ludka Jackpot with maximum enchantments."
+  "screen.ludocraft.risk_0": "50% · x2 · Iron → diamond, diamond → netherite. Gems → 1–2 diamonds. Mod gear: repair + random enchantment; resources x2.",
+  "screen.ludocraft.risk_1": "25% · x4 · Iron → netherite. Diamond gear → netherite + a random enchantment. Gems → 4 diamonds. Mod gear: repair + random enchantment; resources x4.",
+  "screen.ludocraft.risk_2": "10% · x10 · Strongly enchanted netherite gear. Gems → netherite ingot or enchanted golden apple. Mod gear keeps its item type and gets compatible maximum enchantments.",
+  "screen.ludocraft.risk_3": "5% · x20 · MAX RISK! Elytra, nether star, mace or a named Ludka Jackpot with maximum enchantments.",
+  "screen.ludocraft.unsupported": "Not a supported wager",
+  "screen.ludocraft.input_hint": "Click or Shift-click to insert. Tools, armor, weapons, gems and ingots, including modded items. Unsupported items can be taken back.",
+  "tooltip.ludocraft.ludka_compat": "Modded items supported via types and tags."
 }

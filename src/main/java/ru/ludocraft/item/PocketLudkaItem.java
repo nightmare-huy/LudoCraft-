@@ -33,5 +33,6 @@ public final class PocketLudkaItem extends Item {
     public void appendHoverText(ItemStack stack, TooltipContext context, List<Component> tooltip, TooltipFlag flag) {
         tooltip.add(Component.translatable("tooltip.ludocraft.pocket_ludka").withStyle(ChatFormatting.GOLD));
         tooltip.add(Component.translatable("tooltip.ludocraft.ludka_stake").withStyle(ChatFormatting.GRAY));
+        tooltip.add(Component.translatable("tooltip.ludocraft.ludka_compat").withStyle(ChatFormatting.AQUA));
     }
 }
