@@ -36,7 +36,7 @@ jobs:
           fi
           grep -Fq 'PUNCHY_RUNTIME_CONFIRMED: 3.2b' punchy-client.log
           grep -Fq 'PUNCHY_SWEEP_PASS:' punchy-client.log
-          test "$(find run/punchy-smoke/screenshots -name 'punchy-*.png' | wc -l)" -eq 5
+          test "$(find run/punchy-smoke/screenshots -name 'punchy-*.png' | wc -l)" -eq 10
       - name: Save evidence, not a release
         if: always()
         run: |

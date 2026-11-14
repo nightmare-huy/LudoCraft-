@@ -8,7 +8,7 @@ import net.minecraft.client.Screenshot;
 
 /** Development-only resource-pack sweep; tests Punchy's actual JSON loader, not an emulated renderer. */
 public final class PunchyPoseSweep {
-    private static final int[] ANGLES = {-90, -45, 0, 45, 90};
+    private static final String[] ANGLES = {"x-90", "x-45", "x0", "x45", "x90", "y-90", "y-45", "y0", "y45", "y90"};
     private static int phase, ticks;
     private static boolean loading, ready, capture;
     private static com.google.gson.JsonObject baselineRight, baselineLeft;
@@ -27,8 +27,10 @@ public final class PunchyPoseSweep {
                     baselineLeft = profile(mc, true);
                     Files.writeString(Path.of("punchy-profiles.txt"), "right=" + baselineRight + "\nleft=" + baselineLeft);
                 }
-                var right = baselineRight.deepCopy(); right.addProperty("rotZ", ANGLES[phase]);
-                var left = baselineLeft.deepCopy(); left.addProperty("rotZ", -ANGLES[phase]);
+                String field = "rot" + ANGLES[phase].substring(0, 1).toUpperCase(java.util.Locale.ROOT);
+                int angle = Integer.parseInt(ANGLES[phase].substring(1));
+                var right = baselineRight.deepCopy(); right.addProperty(field, angle);
+                var left = baselineLeft.deepCopy(); left.addProperty(field, field.equals("rotX") ? angle : -angle);
                 var sides = new com.google.gson.JsonObject(); sides.add("right", right); sides.add("left", left);
                 var entry = new com.google.gson.JsonObject(); entry.addProperty("kind", "PICKAXE"); entry.add("transforms", sides);
                 var specifics = new com.google.gson.JsonObject(); specifics.add("ludocraft:gamblers_pickaxe", entry);
@@ -64,7 +66,7 @@ public final class PunchyPoseSweep {
     public static void frame(Minecraft mc) throws Exception {
         if (!capture || mc.getOverlay() != null) return;
         capture = false;
-        Path path = Path.of("screenshots", "punchy-candidate-z" + ANGLES[phase] + ".png");
+        Path path = Path.of("screenshots", "punchy-candidate-" + ANGLES[phase] + ".png");
         Files.createDirectories(path.getParent());
         try (var image = Screenshot.takeScreenshot(mc.getMainRenderTarget())) { image.writeToFile(path); }
         phase++; ticks = 0; loading = false; ready = false;

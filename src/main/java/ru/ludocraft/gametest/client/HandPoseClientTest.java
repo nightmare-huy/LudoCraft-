@@ -31,7 +31,9 @@ import ru.ludocraft.LudoCraft;
 @EventBusSubscriber(modid = LudoCraft.MOD_ID, value = Dist.CLIENT)
 public final class HandPoseClientTest {
     private static final boolean PUNCHY = Boolean.getBoolean("ludocraft.punchyTest");
-    private static final String[] SHOTS = {"before-first-right", "after-first-right", "after-first-left",
+    private static final String[] SHOTS = PUNCHY ? new String[]{"looking-down", "after-first-right", "after-first-left",
+            "after-third-front", "after-third-side", "after-third-left", "after-first-swing",
+            "mining-start", "mining-middle", "mining-end", "mining-recovered"} : new String[]{"before-first-right", "after-first-right", "after-first-left",
             "after-third-front", "after-third-side", "after-third-left", "after-first-swing"};
     private static boolean baked, started, configured, capture;
     private static int phase, ticks;
@@ -63,7 +65,7 @@ public final class HandPoseClientTest {
                 mc.options.fov().set(70);
                 var rules = new GameRules();
                 mc.createWorldOpenFlows().createFreshLevel("ludocraft-hand-check",
-                        new LevelSettings("LudoCraft pose check", GameType.CREATIVE, false,
+                        new LevelSettings("LudoCraft pose check", PUNCHY ? GameType.SURVIVAL : GameType.CREATIVE, false,
                                 Difficulty.PEACEFUL, true, rules, WorldDataConfiguration.DEFAULT),
                         new WorldOptions(777L, false, false),
                         access -> access.registryOrThrow(Registries.WORLD_PRESET)
@@ -83,6 +85,10 @@ public final class HandPoseClientTest {
                     player.getInventory().selected = 0;
                     player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(LudoCraft.GAMBLERS_PICKAXE.get()));
                     player.setMainArm(HumanoidArm.RIGHT);
+                    if (PUNCHY && !PunchyPoseSweep.enabled()) {
+                        for (int z = 2; z <= 6; z++) player.serverLevel().setBlockAndUpdate(
+                                new net.minecraft.core.BlockPos(0, -60, z), net.minecraft.world.level.block.Blocks.STONE.defaultBlockState());
+                    }
                     player.serverLevel().setDayTime(1000);
                     server.getGameRules().getRule(GameRules.RULE_DAYLIGHT).set(false, server);
                 });
@@ -91,14 +97,16 @@ public final class HandPoseClientTest {
             if (PunchyPoseSweep.enabled()) { PunchyPoseSweep.tick(mc); return; }
             float yaw = phase == 4 ? 90 : phase == 5 ? -35 : 0;
             mc.player.setYRot(yaw); mc.player.yRotO = yaw;
-            float pitch = PUNCHY && phase == 0 ? 25 : 0;
+            float pitch = PUNCHY && (phase == 0 || phase >= 7) ? 35 : 0;
             mc.player.setXRot(pitch); mc.player.xRotO = pitch;
             mc.player.yBodyRot = 0; mc.player.yBodyRotO = 0;
             mc.player.yHeadRot = yaw; mc.player.yHeadRotO = yaw;
             if (ticks == 0) configureView(mc);
             ticks++;
             if (phase == 6 && ticks == 60) mc.player.swing(InteractionHand.MAIN_HAND);
-            if (ticks == (phase == 6 ? 62 : 80)) capture = true;
+            if (PUNCHY) mc.options.keyAttack.setDown(phase >= 7 && phase <= 9);
+            int duration = phase == 6 ? 62 : PUNCHY && phase >= 7 && phase <= 9 ? 6 : 80;
+            if (ticks == duration) capture = true;
         } catch (Throwable failure) { fail(failure); }
     }
     private static void configureView(Minecraft mc) {
@@ -151,7 +159,12 @@ public final class HandPoseClientTest {
             System.out.println("HAND_POSE_CAPTURE: " + output);
             phase++; ticks = 0;
             if (phase == SHOTS.length) {
-                System.out.println("HAND_POSE_WORLD_PASS: seven actual world captures including both hands, third-person side and swing");
+                if (PUNCHY) {
+                    if (!mc.level.getBlockState(new net.minecraft.core.BlockPos(0, -60, 2)).isAir())
+                        throw new AssertionError("Mining key did not actually break the target stone");
+                    System.out.println("PUNCHY_MINING_PASS: survival attack key destroyed target stone; three action frames and recovery captured");
+                }
+                System.out.println("HAND_POSE_WORLD_PASS: actual world captures including both hands, third-person side and swing");
                 mc.stop();
             }
         } catch (Throwable failure) { fail(failure); }

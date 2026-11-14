@@ -27,13 +27,13 @@ Path('run/punchy-inspection.txt').write_text('\n'.join(report))
 
 # Development-only candidate packs; NOT part of the mod and NOT enabled by default.
 import json
-for angle in (-90, -45, 0, 45, 90):
+for angle in (f"{axis}{degrees}" for axis in ("x", "y") for degrees in (-90, -45, 0, 45, 90)):
     root = Path(f'run/punchy-smoke/resourcepacks/ludka-punchy-candidate-{angle}')
     target = root/'assets/minecraft/punchy/compat/ludocraft_candidate.json'
     target.parent.mkdir(parents=True, exist_ok=True)
     (root/'pack.mcmeta').write_text(json.dumps({'pack': {'pack_format': 34, 'description': 'Dev-only Punchy pose probe'}}))
     target.write_text(json.dumps({'itemSpecific': {'ludocraft:gamblers_pickaxe': {
-        'kind': 'PICKAXE', 'transforms': {'right': {'rotZ': angle}, 'left': {'rotZ': -angle}}
+        'kind': 'PICKAXE', 'transforms': {'right': {'scale': 1}, 'left': {'scale': 1}}
     }}}))
 # Public profile signatures help confirm the configuration API of the exact pinned build.
 with Path('run/punchy-inspection.txt').open('a') as out:
