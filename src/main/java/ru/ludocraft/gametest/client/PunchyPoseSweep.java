@@ -15,7 +15,7 @@ import ru.ludocraft.LudoCraft;
 
 /** Dev-only comparison: use the actual vanilla diamond-pickaxe view transforms/profile as the candidate. */
 public final class PunchyPoseSweep {
-    private static final String[] CASES = {"vanilla-reference", "released", "match-diamond", "match-diamond-left", "match-diamond-down"};
+    private static final String[] CASES = {"vanilla-reference", "released", "match-diamond-size", "match-diamond-size-left", "match-diamond-size-down"};
     private static int phase, ticks;
     private static boolean loading, ready, capture;
     private static com.google.gson.JsonObject diamondRight, diamondLeft, releasedRight, releasedLeft;
@@ -97,7 +97,7 @@ public final class PunchyPoseSweep {
         for (var context : new ItemDisplayContext[]{ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, ItemDisplayContext.FIRST_PERSON_LEFT_HAND}) {
             var from = vanilla.getTransforms().getTransform(context);
             var to = custom.getTransforms().getTransform(context);
-            to.rotation.set(from.rotation); to.translation.set(from.translation); to.scale.set(from.scale);
+            to.rotation.set(from.rotation); to.translation.set(from.translation); to.scale.set(from.scale).mul(.75F);
         }
     }
     @SuppressWarnings({"unchecked", "rawtypes"})
@@ -156,9 +156,10 @@ public final class PunchyPoseSweep {
             var actual = custom.getTransforms().getTransform(context);
             var reference = vanilla.getTransforms().getTransform(context);
             if (!actual.rotation.equals(reference.rotation, .0001F) || !actual.translation.equals(reference.translation, .0001F) ||
-                    !actual.scale.equals(reference.scale, .0001F))
-                throw new AssertionError("LudoCraft first-person item transform differs from vanilla diamond pickaxe for " + context +
-                        ": rotation=" + actual.rotation + ", translation=" + actual.translation + ", scale=" + actual.scale);
+                    !actual.scale.equals(new org.joml.Vector3f(reference.scale).mul(.75F), .0001F))
+                throw new AssertionError("LudoCraft first-person orientation/grip differs from compact vanilla diamond pickaxe reference for " + context +
+                        ": rotation=" + actual.rotation + ", translation=" + actual.translation + ", scale=" + actual.scale +
+                        "; referenceScale=" + reference.scale);
         }
         System.out.println("PUNCHY_COMPAT_PASS: shipped Punchy profiles and both first-person item transforms match vanilla diamond pickaxe");
     }

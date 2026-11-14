@@ -10,7 +10,7 @@ def check_hand_poses(model, rotate):
     for side, sign in [('right', 1), ('left', -1)]:
         t = model['display'][f'firstperson_{side}hand']
         angles = [t['rotation'][0], sign*t['rotation'][1], sign*t['rotation'][2]]
-        assert max(t['scale']) <= .70, 'First-person scale may exceed the vanilla pickaxe reference'
+        assert max(t['scale']) <= .55, 'First-person mesh should remain modestly smaller than vanilla diamond pickaxe'
         for aspect in (16/9, 4/3):
             for e in model['elements']:
                 for v in product(*zip(e['from'], e['to'])):

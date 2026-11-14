@@ -43,6 +43,16 @@ jobs:
           grep -Fq 'PUNCHY_COMPAT_PASS:' punchy-client.log
           test "$(find run/punchy-smoke/screenshots -name 'punchy-*.png' | wc -l)" -eq 11
           .model-tools/bin/python tools/check_punchy_captures.py
+      - name: Detect whether this version is already released
+        id: published
+        if: success()
+        run: |
+          VERSION=$(sed -n 's/^mod_version=//p' gradle.properties | tr -d '\r')
+          if gh release view "v${VERSION}" >/dev/null 2>&1; then
+            echo 'exists=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'exists=false' >> "$GITHUB_OUTPUT"
+          fi
       - name: Preserve failed Punchy pose diagnostic
         if: failure() && github.ref == 'refs/heads/arena/70f21d2d-ludocraft'
         run: |
@@ -58,6 +68,7 @@ jobs:
             echo 'No runtime pose diagnostic was created.'
           fi
       - name: Save versioned real-game evidence
+        if: success() && steps.published.outputs.exists != 'true'
         run: |
           VERSION=$(sed -n 's/^mod_version=//p' gradle.properties | tr -d '\r')
           PREVIEW="docs/previews/v${VERSION}"

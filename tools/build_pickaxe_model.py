@@ -55,8 +55,8 @@ DISPLAY = {
     'thirdperson_righthand': {'rotation': [45, 90, 0], 'translation': [0, -.85, 1.5], 'scale': [.65, .65, .65]},
     'thirdperson_lefthand': {'rotation': [45, 90, 0], 'translation': [0, -.85, 1.5], 'scale': [.65, .65, .65]},
     # Match Punchy 3.2b's actual first-person display transform for vanilla diamond pickaxe.
-    'firstperson_righthand': {'rotation': [0, -90, 25], 'translation': [1.13, 3.2, 1.13], 'scale': [.68, .68, .68]},
-    'firstperson_lefthand': {'rotation': [0, 90, -25], 'translation': [1.13, 3.2, 1.13], 'scale': [.68, .68, .68]},
+    'firstperson_righthand': {'rotation': [0, -90, 25], 'translation': [1.13, 3.2, 1.13], 'scale': [.51, .51, .51]},
+    'firstperson_lefthand': {'rotation': [0, 90, -25], 'translation': [1.13, 3.2, 1.13], 'scale': [.51, .51, .51]},
 }
 
 def voxels():

@@ -7,7 +7,7 @@ small=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf',20)
 sheet=Image.new('RGB',(1520,1720),'#151c27');d=ImageDraw.Draw(sheet)
 d.text((22,16),'Сверка с обычной алмазной киркой · Punchy 3.2b',font=f,fill='#f3d591')
 d.text((22,51),'Референс и новый тест используют настройки Punchy и игровые кадры.',font=small,fill='#c6d2e3')
-rows=[('vanilla-reference','Алмазная кирка — референс'),('released','LudoCraft 1.5.3 — прежняя поза'),('match-diamond','LudoCraft — трансформы как у алмазной'),('match-diamond-left','Новый вариант, левая рука')]
+rows=[('vanilla-reference','Алмазная кирка — референс'),('released','LudoCraft 1.5.3 — прежняя поза'),('match-diamond-size','LudoCraft — та же точка хвата, масштаб 75%'),('match-diamond-size-left','Новый вариант, левая рука')]
 for i,(name,label) in enumerate(rows):
  x=i%2*760;y=95+i//2*790
  d.text((x+12,y),label,font=f,fill='white')
