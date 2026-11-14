@@ -106,8 +106,13 @@ jobs:
             build/libs/ludocraft-${{ steps.version.outputs.version }}-ftb-evolution-1.47.0.zip
           if-no-files-found: error
 
+  punchy:
+    uses: ./.github/workflows/punchy.yml
+    permissions:
+      contents: write
+
   release:
-    needs: build
+    needs: [build, punchy]
     # Never publish from pull requests or unrelated branches/forks.
     if: >-
       github.repository == 'nightmare-huy/LudoCraft-' &&
