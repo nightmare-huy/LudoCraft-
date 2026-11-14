@@ -28,9 +28,19 @@ jobs:
           assert data is not None, 'Official manifest unavailable'
           print('::notice::TARGET ' + json.dumps(data['targets']))
           mods = [f['name'] for f in data['files'] if f['name'].endswith('.jar')]
-          print('::notice::MODS ' + json.dumps(mods))
+          selected = [n for n in mods if any(w in n.lower() for w in ['ftb', 'allthe', 'mekanism', 'industrial', 'hostile', 'mystical', 'productive', 'draconic', 'ae2', 'extendedae', 'megacell', 'projecte'])]
+          print('::notice::MODS ' + json.dumps(selected))
+          sources = []
           for f in data['files']:
               path = f['path'] + '/' + f['name']
               if ('server_scripts' in path or 'startup_scripts' in path) and f['name'].endswith('.js'):
-                  print('::notice::SOURCE ' + json.dumps({'path': path, 'url': f['url'], 'sha256': f.get('hashes', {}).get('sha256')}))
+                  sources.append(path + ' ' + f['url'])
+          # GitHub caps annotations at ten per step and truncates long messages.
+          groups = ['']
+          for source in sources:
+              if len(groups[-1]) + len(source) > 3700:
+                  groups.append('')
+              groups[-1] += source + '\n'
+          for group in groups[:8]:
+              print('::notice::INDEX ' + group.replace('\n', '%0A'))
           PY
