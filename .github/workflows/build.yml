@@ -67,7 +67,8 @@ jobs:
           grep -Fq 'PICKAXE_MODEL_SMOKE_PASS:' client-model-test.log || { echo '::error::Client never confirmed model baking'; tail -80 client-model-test.log; exit 1; }
           grep -Fq 'HAND_POSE_WORLD_PASS:' client-model-test.log || { echo '::error::World pose inspection did not complete'; tail -80 client-model-test.log; exit 1; }
           test "$(find run/model-smoke/screenshots -name 'hand-*.png' | wc -l)" -eq 7
-          echo '::notice::Real client: model bake and seven in-world hand/side/swing screenshots completed.'
+          .model-tools/bin/python tools/check_hand_captures.py
+          echo '::notice::Real client: model bake and seven non-empty in-world hand/side/swing screenshots completed.'
       - name: Verify distributable contents
         run: |
           python3 - <<'PY'

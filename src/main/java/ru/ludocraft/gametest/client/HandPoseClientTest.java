@@ -12,7 +12,6 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.Difficulty;
 import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.HumanoidArm;
-import net.minecraft.world.entity.decoration.ArmorStand;
 import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.GameRules;
@@ -35,6 +34,7 @@ public final class HandPoseClientTest {
             "after-third-front", "after-third-side", "after-third-left", "after-first-swing"};
     private static boolean baked, started, configured, capture;
     private static int phase, ticks;
+    private static org.joml.Vector3f originalRotation, originalTranslation, originalScale;
     private HandPoseClientTest() {}
     public static void startAfterBake() { baked = true; }
     private static boolean enabled() { return Boolean.getBoolean("ludocraft.handPoseTest"); }
@@ -83,10 +83,11 @@ public final class HandPoseClientTest {
                 });
             }
             if (!mc.player.getMainHandItem().is(LudoCraft.GAMBLERS_PICKAXE.get())) return;
-            mc.player.setYRot(0); mc.player.yRotO = 0;
+            float yaw = phase == 4 ? 90 : phase == 5 ? -35 : 0;
+            mc.player.setYRot(yaw); mc.player.yRotO = yaw;
             mc.player.setXRot(0); mc.player.xRotO = 0;
             mc.player.yBodyRot = 0; mc.player.yBodyRotO = 0;
-            mc.player.yHeadRot = 0; mc.player.yHeadRotO = 0;
+            mc.player.yHeadRot = yaw; mc.player.yHeadRotO = yaw;
             if (ticks == 0) configureView(mc);
             ticks++;
             if (phase == 6 && ticks == 60) mc.player.swing(InteractionHand.MAIN_HAND);
@@ -98,29 +99,26 @@ public final class HandPoseClientTest {
         var transform = model.getTransforms().getTransform(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND);
         // A/B in the SAME world and camera: old 1.5.1 pose versus exported corrected pose.
         if (phase == 0) {
+            originalRotation = new org.joml.Vector3f(transform.rotation);
+            originalTranslation = new org.joml.Vector3f(transform.translation);
+            originalScale = new org.joml.Vector3f(transform.scale);
             transform.rotation.set(0, -90, 20);
             transform.translation.set(1.13F/16, 3.2F/16, 1.13F/16);
             transform.scale.set(.85F);
         } else {
-            transform.rotation.set(0, -25, 10);
-            transform.translation.set(-2F/16, 3F/16, -2.5F/16);
-            transform.scale.set(.6F);
+            // Restore the ACTUAL baked JSON, never a separate hard-coded candidate pose.
+            transform.rotation.set(originalRotation);
+            transform.translation.set(originalTranslation);
+            transform.scale.set(originalScale);
         }
         mc.player.setMainArm(phase == 2 || phase == 5 ? HumanoidArm.LEFT : HumanoidArm.RIGHT);
         mc.options.setCameraType(CameraType.FIRST_PERSON);
         mc.setCameraEntity(mc.player);
         mc.gameRenderer.setRenderHand(true);
         if (phase >= 3 && phase <= 5) {
-            // A detached camera keeps the actual player's body/hand/item layer visible from the side.
-            double dx = phase == 4 ? 3 : phase == 5 ? -2.5 : 2.5;
-            double dz = phase == 4 ? 0 : 3.5;
-            var camera = new ArmorStand(mc.level, mc.player.getX()+dx, mc.player.getY(), mc.player.getZ()+dz);
-            camera.setPos(camera.getX(), mc.player.getY()+1-camera.getEyeHeight(), camera.getZ());
-            camera.setYRot((float) Math.toDegrees(Math.atan2(dx, -dz)));
-            camera.setXRot(0);
-            camera.setOldPosAndRot();
-            mc.setCameraEntity(camera);
-            mc.gameRenderer.setRenderHand(false);
+            // Actual F5 front camera. Keep torso yaw fixed and turn the head/camera to
+            // inspect the side; vanilla deliberately hides LocalPlayer from other entities' cameras.
+            mc.options.setCameraType(CameraType.THIRD_PERSON_FRONT);
         }
     }
     @SubscribeEvent
