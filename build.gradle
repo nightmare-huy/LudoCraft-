@@ -94,3 +94,13 @@ tasks.register('evolutionPack', Zip) {
     destinationDirectory = layout.buildDirectory.dir('libs')
 }
 tasks.named('build') { dependsOn tasks.named('evolutionPack') }
+
+// Real client asset baking under Xvfb in CI; no world or gameplay automation.
+neoForge.runs {
+    modelSmokeClient {
+        client()
+        gameDirectory = project.file('run/model-smoke')
+        systemProperty 'ludocraft.modelSmokeTest', 'true'
+        programArguments.addAll('--width', '960', '--height', '540')
+    }
+}

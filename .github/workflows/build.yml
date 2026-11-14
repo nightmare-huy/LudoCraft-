@@ -24,6 +24,11 @@ jobs:
             exit 1
           }
           echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Validate 3D model and textures
+        run: |
+          python3 -m venv .model-tools
+          .model-tools/bin/pip install Pillow==13.0.0
+          .model-tools/bin/python tools/check_pickaxe_model.py
       - name: Build and test
         shell: bash
         run: |
@@ -41,16 +46,40 @@ jobs:
           grep -Fq 'All 2 required tests passed' build-output.log || { echo '::error::Missing Evolution GameTest completion'; exit 1; }
           grep -Fq 'PASS: Evolution 1.47.0' build-output.log || { echo '::error::Missing Evolution rule tests'; exit 1; }
           echo '::notice::Verified: default 8/8, Evolution preset 2/2 GameTests, pure Evolution rule tests.'
+      - name: Bake pickaxe in a real Minecraft client
+        timeout-minutes: 10
+        env:
+          LIBGL_ALWAYS_SOFTWARE: 'true'
+          ALSOFT_DRIVERS: 'null'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libxi6 libxrender1 libxtst6
+          if ! timeout 300s xvfb-run -a -s '-screen 0 1280x720x24' ./gradlew runModelSmokeClient --no-daemon > client-model-test.log 2>&1; then
+            tail -100 client-model-test.log
+            while IFS= read -r line; do
+              line="${line//'%'/'%25'}"
+              echo "::error::$line"
+            done < <(tail -45 client-model-test.log)
+            exit 1
+          fi
+          grep -Fq 'PICKAXE_MODEL_SMOKE_PASS:' client-model-test.log || { echo '::error::Client never confirmed model baking'; tail -80 client-model-test.log; exit 1; }
+          echo '::notice::Real Minecraft client: pickaxe baked successfully (241 quads, sprites, positions, UVs, all display contexts).'
       - name: Verify distributable contents
         run: |
           python3 - <<'PY'
           import glob, json, zipfile
+          from pathlib import Path
           jar = glob.glob('build/libs/ludocraft-*.jar')
           assert len(jar) == 1
           with zipfile.ZipFile(jar[0]) as z:
               assert not any('/gametest/' in n or n.startswith('data/ludocraft_evolution/') for n in z.namelist())
               marker = 'data/ludocraft/tags/item/balance/ftb_evolution_1_47_0.json'
               assert json.loads(z.read(marker))['values'] == []
+              model = 'assets/ludocraft/models/item/gamblers_pickaxe.json'
+              texture = 'assets/ludocraft/textures/item/gamblers_pickaxe_3d.png'
+              assert z.read(model) == Path('src/main/resources', model).read_bytes()
+              assert z.read(texture) == Path('src/main/resources', texture).read_bytes()
+              assert len(json.loads(z.read(model))['elements']) == 241
           pack = glob.glob('build/libs/*-ftb-evolution-1.47.0.zip')
           assert len(pack) == 1
           with zipfile.ZipFile(pack[0]) as z:
@@ -117,9 +146,13 @@ jobs:
 
           Алмазная кирка: 85% — без предметов и опыта, 15% — дроп ×2–×5, звук «777», конфетти и визуальные фейерверки.
 
-          Карманная Лудка 1.5.0: опциональный консервативный профиль FTB Evolution 1.47.0. Обычный режим 1.4.0 сохранён, профиль НЕ включается автоматически.
+          Новое в 1.5.1: настоящая объёмная Кирка Лудомании — алмазная головка, золотые крепления, рукоять с обмоткой и 777 с двух сторон. Стандартная JSON-модель Minecraft, без GeckoLib/OBJ-загрузчиков. Баланс, кирка 85/15 и профиль Evolution не изменены.
 
-          Установка профиля: ZIP `ludocraft-*-ftb-evolution-1.47.0.zip` целиком в `<мир>/datapacks/` (на сервере — в папку серверного мира), затем `/reload` и заново открыть Лудку. В заголовке появится EVOLUTION 1.47.0. ZIP не класть в mods и не распаковывать внутрь другого datapack.
+          Проверки модели: связность, полное покрытие поверхности, отсутствие перекрывающихся граней, UV/текстура, границы GUI/рамки; загрузка и baking реальным Minecraft-клиентом в Xvfb. Проверка не заменяет ручной осмотр в руке, взмахов и сторонних шейдеров. Превью в docs/previews/v1.5.1 — программные рендеры реальных JSON/PNG, не скриншоты игры.
+
+          Карманная Лудка: опциональный консервативный профиль FTB Evolution 1.47.0. Обычный режим 1.4.0 сохранён, профиль НЕ включается автоматически.
+
+          Если профиль Evolution 1.5.0 уже установлен, оставьте его: повторный ZIP не нужен. Для новой установки профиля: ZIP `ludocraft-*-ftb-evolution-1.47.0.zip` целиком в `<мир>/datapacks/` (на сервере — в папку серверного мира), затем `/reload` и заново открыть Лудку. В заголовке появится EVOLUTION 1.47.0. ZIP не класть в mods и не распаковывать внутрь другого datapack.
 
           Проверены официальные manifest 125/100598 и отдельные KubeJS-скрипты 1.47.0. FTB Materials и эквивалентные ресурсы оценены согласованно. Пример: алмаз 32, незерит 512, AE2 controller 2048, item cell 1k 640. Неоценённые модовые вещи: ставка не более 32, награда не менее 512; это намеренный разрыв, а не одинаковая цена покупки/ставки.
 
@@ -127,7 +160,7 @@ jobs:
 
           Сервер выбирает исход, расходуется один предмет. Победа создаёт один стандартный экземпляр цели, не копируя содержимое/заряд ставки. Кирка 85/15 и трёхсекундная анимация не изменены.
 
-          CI: чистые тесты правил, обычный GameTest-сервер и отдельный GameTest-сервер с настоящим datapack-профилем. Полная FTB Evolution и клиент GUI в CI не запускаются. Это первый экспериментальный баланс, не полный аудит экономики сборки. Документация: docs/balance/ftb-evolution-1.47.0.md.
+          CI: чистые тесты правил, обычный GameTest-сервер и отдельный GameTest-сервер с настоящим datapack-профилем. Полная FTB Evolution и игровой мир в клиенте в CI не запускаются; клиентская проверка ограничена загрузкой ресурсов и baking модели. Это первый экспериментальный баланс, не полный аудит экономики сборки. Документация: docs/balance/ftb-evolution-1.47.0.md.
           NOTES
           gh release create "$tag" "release/$jar" "release/$preset" release/SHA256SUMS.txt \
             --repo "$GH_REPO" --target "$GITHUB_SHA" \

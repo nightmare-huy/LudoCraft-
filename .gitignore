@@ -43,3 +43,6 @@ repo/
 .venv/
 __pycache__/
 *.wav
+
+# Optional Python model validation environment
+.model-tools/
