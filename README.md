@@ -141,10 +141,10 @@ Blacklist приоритетнее разрешающих тегов и авто
 Эти GameTests включены в CI **до публикации** релиза; тестовые классы и структура
 не входят в распространяемый JAR.
 
-**Результат 1.1.0:** `build runGameTestServer` успешно выполнены на Java 21
-14 ноября 2026 года, коммит `3e609adfebac1bb654802f6cd8743c2b08bf0516`.
-[Сборка и тесты](https://github.com/nightmare-huy/LudoCraft-/actions/runs/43550065158) ·
-[Скачать ludocraft-1.1.0.jar](https://github.com/nightmare-huy/LudoCraft-/releases/download/v1.1.0/ludocraft-1.1.0.jar).
+**Результат 1.2.0:** `build runGameTestServer` успешно выполнены на Java 21
+14 ноября 2026 года, коммит `64409880abe5a4685679cd5af87aa2e8a6e99063`.
+[Сборка и тесты](https://github.com/nightmare-huy/LudoCraft-/actions/runs/43551301399) ·
+[Скачать ludocraft-1.2.0.jar](https://github.com/nightmare-huy/LudoCraft-/releases/download/v1.2.0/ludocraft-1.2.0.jar).
 Перед установкой удалите старый JAR LudoCraft из `mods`, не оставляйте обе версии.
 
 Ручная проверка клиента ещё нужна: открыть ПКМ в обеих руках; проверить все четыре
