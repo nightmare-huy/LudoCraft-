@@ -1,0 +1,207 @@
+URL: https://cdn.modrinth.com/data/8aoMKplv/versions/aVZEe0j8/punchy-3.2b-neoforge-1.21.1.jar
+SHA512: 6f8426512d5ba99e356a151f4c73f85e6d287e6e2c19756b88037f7cf443e758cf2cbfb7964ba8e00ccd3ecb5826b572302e20bf1236e7a6d1e9676d541feb3d
+modLoader = "javafml" #mandatory
+loaderVersion = ">=4" #mandatory
+license = "ARR" # Review your options at https://choosealicense.com/.
+[[mods]] #mandatory
+modId = "punchy" #mandatory
+version = "3.2b" #mandatory
+displayName = "Punchy" #mandatory
+#updateJSONURL="https://change.me.example.invalid/updates.json" #optional (see https://docs.neoforged.net/docs/misc/updatechecker/)
+#displayURL="https://change.me.to.your.mods.homepage.example.invalid/" #optional (displayed in the mod UI)
+logoFile="assets/punchy/icon.png" #optional
+credits="Additional art assets: Pixel Art Generic Icons by Reff Pixels (reffpixels.com). Icons from Pixel Icon Library by HackerNoon (CC BY 4.0, unchanged)." #optional
+authors = "Punchy" #optional
+description = '''First-person animations. Special thanks to Godku for the support.''' #mandatory (Supports multiline text)
+[[mixins]]
+config = "punchy.mixins.json"
+[[mixins]]
+config = "punchy.compat.mixins.json"
+[[dependencies.punchy]] #optional
+modId = "neoforge" #mandatory
+type="required" #mandatory (Can be one of "required", "optional", "incompatible" or "discouraged")
+versionRange = "[21.1.229,)" #mandatory
+ordering = "NONE" # The order that this dependency should load in relation to your mod, required to be either 'BEFORE' or 'AFTER' if the dependency is not mandatory
+side = "CLIENT" # Side this dependency is applied on - 'BOTH', 'CLIENT' or 'SERVER'
+[[dependencies.punchy]]
+modId = "minecraft"
+type="required" #mandatory (Can be one of "required", "optional", "incompatible" or "discouraged")
+versionRange = "[1.21.1, 1.22)"
+ordering = "NONE"
+side = "CLIENT"
+
+punchy/client/bedrockitems/BedrockItemRenderer$1.class
+punchy/client/bedrockitems/BedrockItemRenderer$DynamicValueCache.class
+punchy/client/bedrockitems/BedrockItemRenderer$EmissiveKey.class
+punchy/client/bedrockitems/BedrockItemRenderer$GeometryDraw.class
+punchy/client/bedrockitems/BedrockItemRenderer$TextureAnim.class
+punchy/client/bedrockitems/BedrockItemRenderer.class
+punchy/client/debug/PunchyTuningIO$Section.class
+punchy/client/debug/PunchyTuningIO.class
+punchy/client/fixes/CompatScan$Family.class
+punchy/client/fixes/CompatScan$Found.class
+punchy/client/fixes/CompatScan$Mod.class
+punchy/client/fixes/CompatScan.class
+punchy/client/fixes/CompatWarnings.class
+punchy/client/gui/CompatibilityWarningScreen$1.class
+punchy/client/gui/CompatibilityWarningScreen$2.class
+punchy/client/gui/CompatibilityWarningScreen$Warning.class
+punchy/client/gui/CompatibilityWarningScreen.class
+punchy/client/gui/StartupCompatibilityWarnings.class
+punchy/client/menu/mc/CompatNoticeBoot.class
+punchy/client/menu/punchy/CompatNotices.class
+punchy/client/menu/punchy/MovesCompatProvider$Feature.class
+punchy/client/menu/punchy/MovesCompatProvider.class
+punchy/client/render/ChestProxyTuning$Kind.class
+punchy/client/render/ChestProxyTuning$Profile.class
+punchy/client/render/ChestProxyTuning.class
+punchy/client/render/EnchantParticleProxyTuning$Kind.class
+punchy/client/render/EnchantParticleProxyTuning$Profile.class
+punchy/client/render/EnchantParticleProxyTuning.class
+punchy/client/render/FishingLineProxyTuning$Kind.class
+punchy/client/render/FishingLineProxyTuning$Profile.class
+punchy/client/render/FishingLineProxyTuning.class
+punchy/client/render/FluidProxyTuning$Kind.class
+punchy/client/render/FluidProxyTuning$Profile.class
+punchy/client/render/FluidProxyTuning.class
+punchy/client/render/PaddleProxyTuning$Kind.class
+punchy/client/render/PaddleProxyTuning$Profile.class
+punchy/client/render/PaddleProxyTuning.class
+punchy/client/render/PunchyArmRenderer$EmptyHandSprintTuningBlend.class
+punchy/client/render/ToolKindResolver.class
+punchy/client/render/ToolTuning$1.class
+punchy/client/render/ToolTuning$EnchantmentParticleVariant.class
+punchy/client/render/ToolTuning$EnchantmentRequirement.class
+punchy/client/render/ToolTuning$PhysicsMode.class
+punchy/client/render/ToolTuning$PhysicsSettings.class
+punchy/client/render/ToolTuning$Profile.class
+punchy/client/render/ToolTuning$RotationOrder.class
+punchy/client/render/ToolTuning$SpecificEntry.class
+punchy/client/render/ToolTuning$SpecificSnapshot.class
+punchy/client/render/ToolTuning$SpecificSnapshotDetailed.class
+punchy/client/render/ToolTuning$TransformOverride.class
+punchy/client/render/ToolTuning.class
+punchy/client/renderer/layer/ArmMeshTuning$Profile.class
+punchy/client/renderer/layer/ArmMeshTuning.class
+punchy/client/renderer/layer/ArmToolTuning$Profile.class
+punchy/client/renderer/layer/ArmToolTuning$SpecificEntry.class
+punchy/client/renderer/layer/ArmToolTuning$SpecificSnapshot.class
+punchy/client/renderer/layer/ArmToolTuning$TransformOverride.class
+punchy/client/renderer/layer/ArmToolTuning.class
+punchy/client/renderer/layer/PlayerArmModelLayer$ToolKind.class
+punchy/client/renderer/layer/VanillaFirstPersonItemLayer$ToolKind.class
+punchy/client/tuning/
+punchy/client/tuning/MenuBridgeMix.class
+punchy/client/tuning/MixPackKeybinds.class
+punchy/client/tuning/MixProfileManager$MixProfileData.class
+punchy/client/tuning/MixProfileManager.class
+punchy/client/tuning/MixThePacksScreen$1.class
+punchy/client/tuning/MixThePacksScreen$RowEntry.class
+punchy/client/tuning/MixThePacksScreen.class
+punchy/client/tuning/TuningEditorKeybinds.class
+punchy/client/tuning/TuningKeybinds$AdjustmentResult.class
+punchy/client/tuning/TuningKeybinds$Axis.class
+punchy/client/tuning/TuningKeybinds$Mode.class
+punchy/client/tuning/TuningKeybinds$Target.class
+punchy/client/tuning/TuningKeybinds.class
+punchy/client/tuning/TuningProfileManager.class
+punchy/client/tuning/TuningWorkbenchScreen$EditorTarget.class
+punchy/client/tuning/TuningWorkbenchScreen$FloatSlider.class
+punchy/client/tuning/TuningWorkbenchScreen$Scope.class
+punchy/compat/
+punchy/compat/AdorableHamsterPetsCompat$1.class
+punchy/compat/AdorableHamsterPetsCompat$RequestedHamsterState.class
+punchy/compat/AdorableHamsterPetsCompat.class
+punchy/compat/BetterCombatCompat.class
+punchy/compat/CrawlCompat.class
+punchy/compat/EmfEtfCemCompat$ProxyPhysicsTarget.class
+punchy/compat/EmfEtfCemCompat.class
+punchy/compat/EmfFirstPersonHandCompat$Scope.class
+punchy/compat/EmfFirstPersonHandCompat.class
+punchy/compat/entityculling/
+punchy/compat/entityculling/EntityCullingCompat.class
+punchy/compat/FirstPersonModelCompat$State.class
+punchy/compat/FirstPersonModelCompat.class
+punchy/compat/iris/
+punchy/compat/iris/IrisItemLightProviderCompat.class
+punchy/compat/IrisShaderPackCompat.class
+punchy/compat/ItemPhysicCompat.class
+punchy/compat/PunchyPuppiesCompat.class
+punchy/compat/SkinLayersCompat.class
+punchy/compat/SpatialGuiCompat$ClosingPhase.class
+punchy/compat/SpatialGuiCompat$OpeningPhase.class
+punchy/compat/SpatialGuiCompat.class
+punchy/compat/SpellEngineCompat.class
+punchy/compat/SwordBlockingMechanicsCompat.class
+punchy/compat/TaczBlacklistCompat$VirtualEntry.class
+punchy/compat/TaczBlacklistCompat.class
+punchy/config/PunchyTuningConfig$AnimationRef.class
+punchy/config/PunchyTuningConfig$AnimationVariation.class
+punchy/config/PunchyTuningConfig$BetterCombatEntry.class
+punchy/config/PunchyTuningConfig$BiomeDetection.class
+punchy/config/PunchyTuningConfig$BlockDetection.class
+punchy/config/PunchyTuningConfig$CompatResourceEntry.class
+punchy/config/PunchyTuningConfig$CustomAnimationEntry.class
+punchy/config/PunchyTuningConfig$CustomFlags.class
+punchy/config/PunchyTuningConfig$CustomGroupDefinition.class
+punchy/config/PunchyTuningConfig$Data.class
+punchy/config/PunchyTuningConfig$EmptyHandEntry.class
+punchy/config/PunchyTuningConfig$EnchantmentVariant.class
+punchy/config/PunchyTuningConfig$EnchantParticleProxySide.class
+punchy/config/PunchyTuningConfig$FishingLineProxySide.class
+punchy/config/PunchyTuningConfig$GroupEntry.class
+punchy/config/PunchyTuningConfig$ItemRuntimeFlags.class
+punchy/config/PunchyTuningConfig$MixCatalog.class
+punchy/config/PunchyTuningConfig$MixCatalogOrdering.class
+punchy/config/PunchyTuningConfig$MixSlotDef.class
+punchy/config/PunchyTuningConfig$MixSlotPayload.class
+punchy/config/PunchyTuningConfig$MixSlotType.class
+punchy/config/PunchyTuningConfig$PaddleProxySide.class
+punchy/config/PunchyTuningConfig$PhysicsEntry.class
+punchy/config/PunchyTuningConfig$Pose.class
+punchy/config/PunchyTuningConfig$SideSet.class
+punchy/config/PunchyTuningConfig$SpecificEntry.class
+punchy/config/PunchyTuningConfig$TimeDetection.class
+punchy/config/PunchyTuningConfig$WeatherDetection.class
+punchy/config/PunchyTuningConfig.class
+punchy/mixin/client/accessor/ItemRendererInvoker.class
+punchy/mixin/client/ItemRendererMixin.class
+punchy/util/ResourceLocationCompat.class
+punchy.compat.mixins.json
+resourcepacks/punchy/assets/minecraft/punchy/compat/
+resourcepacks/punchy/assets/minecraft/punchy/compat/tuning_template.json
+resourcepacks/punchy/assets/minecraft/punchy/compat/punchy_cake.json
+punchy/client/api/CompatData.class
+punchy/client/api/OverlayArmTuning.class
+punchy/client/tuning/CustomGroups.class
+punchy/client/tuning/HandEditorData.class
+punchy/client/tuning/HandEditorData$1.class
+punchy/client/tuning/HandPoseProfiles.class
+punchy/client/tuning/PoseShift.class
+punchy/client/tuning/PresetLoad.class
+punchy/client/tuning/TuningWorkbenchScreen.class
+punchy/compat/AccessoriesHands.class
+punchy/compat/BrushHands.class
+punchy/compat/CameraHands.class
+punchy/compat/CarryOnHands.class
+punchy/compat/CreateBacktankArm.class
+punchy/compat/CreateExtendoGrip.class
+punchy/compat/CuriosHands.class
+punchy/compat/EmfHands.class
+punchy/compat/EpicFightHands.class
+punchy/compat/EssentialHands.class
+punchy/compat/InstalledMods.class
+punchy/compat/InteractiveStuffCompat.class
+punchy/compat/InteractiveStuffCompat$ScriptFailure.class
+punchy/compat/InteractiveStuffHands.class
+punchy/compat/InteractiveStuffHands$Pending.class
+punchy/compat/InvisibleArms.class
+punchy/compat/MowziesMobsHands.class
+punchy/compat/OptionalClasses.class
+punchy/compat/PlayerAnimationLibraryHands.class
+punchy/compat/PlayerAnimatorHands.class
+punchy/compat/PrometheusFlames.class
+punchy/compat/PrometheusFlames$Source.class
+punchy/compat/Recent.class
+punchy/compat/Reflect.class
+punchy/compat/SimpleBedrockModelHands.class
