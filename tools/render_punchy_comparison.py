@@ -13,8 +13,19 @@ if version == '1.5.3':
     before='punchy-before/punchy-after-first-right.png'
     before_label='До — LudoCraft 1.5.2 + Punchy 3.2b'
 else:
-    parts = [int(v) for v in version.split('.')]
-    previous_version = f'{parts[0]}.{parts[1]}.{parts[2]-1}'
+    current = tuple(int(part) for part in version.split('.'))
+    previous = []
+    for capture in root.parent.glob('v*/punchy/punchy-after-first-right.png'):
+        candidate = capture.parent.parent.name.removeprefix('v')
+        try:
+            candidate_version = tuple(int(part) for part in candidate.split('.'))
+        except ValueError:
+            continue
+        if candidate_version < current:
+            previous.append((candidate_version, candidate))
+    if not previous:
+        raise FileNotFoundError(f'No earlier Punchy capture exists for comparison with {version}')
+    _, previous_version = max(previous)
     before=f'../v{previous_version}/punchy/punchy-after-first-right.png'
     before_label=f'До — LudoCraft {previous_version} + Punchy 3.2b'
 frames=[(before,before_label),
