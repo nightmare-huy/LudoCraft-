@@ -43,8 +43,8 @@ public final class PickaxeModelSmokeTest {
                 }
             }
             require(directions.size() == 6, "Missing outward face directions");
-            verifyPremiumModel(event, "vip_gamblers_pickaxe", 206);
-            verifyPremiumModel(event, "highroller_pickaxe", 238);
+            verifyPremiumModel(event, "vip_gamblers_pickaxe", 280);
+            verifyPremiumModel(event, "highroller_pickaxe", 320);
             for (var context : ItemDisplayContext.values()) {
                 if (context == ItemDisplayContext.NONE) continue;
                 var pose = new PoseStack();
@@ -54,7 +54,7 @@ public final class PickaxeModelSmokeTest {
                 var scale = model.getTransforms().getTransform(context).scale;
                 require(scale.x > 0 && scale.y > 0 && scale.z > 0, "Invisible or inverted transform: " + context);
             }
-            System.out.println("PICKAXE_MODEL_SMOKE_PASS: real client baked 241 quads, correct sprites, finite vertices/UVs, six directions and all display transforms");
+            System.out.println("PICKAXE_MODEL_SMOKE_PASS: real client baked Gambler, VIP (280) and Highroller (320) quads with correct sprites, finite vertices/UVs, six directions and display transforms");
             if (Boolean.getBoolean("ludocraft.handPoseTest")) {
                 HandPoseClientTest.startAfterBake();
             } else {
@@ -76,8 +76,10 @@ public final class PickaxeModelSmokeTest {
         var quads = model.getQuads(null, null, RandomSource.create(0));
         require(quads.size() == expectedQuads, "Wrong baked quad count for " + name + ": " + quads.size());
         for (var quad : quads) {
-            require(quad.getSprite().contents().name().equals(LudoCraft.id("item/" + name + "_3d")),
-                    "Missing premium face sprite: " + name);
+            var sprite = quad.getSprite().contents().name();
+            require(sprite.getNamespace().equals(LudoCraft.MOD_ID)
+                            && sprite.getPath().startsWith("item/" + name + "_3d_"),
+                    "Missing premium face sprite: " + sprite);
         }
     }
 

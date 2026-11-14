@@ -86,19 +86,20 @@ jobs:
       - name: Preserve premium pickaxe in-game previews
         if: success() && github.ref == 'refs/heads/arena/70f21d2d-ludocraft'
         run: |
-          DEST=docs/previews/v1.6.0/vanilla
+          VERSION=$(sed -n 's/^mod_version=//p' gradle.properties | tr -d '\r')
+          DEST="docs/previews/v${VERSION}/vanilla"
           mkdir -p "$DEST"
           cp run/model-smoke/screenshots/hand-vip-firstperson.png "$DEST/vip-firstperson.png"
           cp run/model-smoke/screenshots/hand-highroller-firstperson.png "$DEST/highroller-firstperson.png"
-          cat > "$DEST/README.md" <<'PREVIEW'
-          # LudoCraft 1.6.0 — actual vanilla-client views
+          cat > "$DEST/README.md" <<PREVIEW
+          # LudoCraft ${VERSION} — actual vanilla-client views
 
           Captured by the automated Minecraft 1.21.1 NeoForge client smoke world without Punchy. These are real first-person gameplay frames, not model renders. The scripted scene holds each registered pickaxe in the player's main hand; automated captures do not replace a manual visual review.
           PREVIEW
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add "$DEST"
-          git commit -m 'Save 1.6.0 premium pickaxe in-game previews [skip ci]'
+          git commit -m "Save ${VERSION} premium pickaxe in-game previews [skip ci]"
           git push origin HEAD:arena/70f21d2d-ludocraft
       - name: Preserve failed vanilla client evidence for diagnosis
         if: failure() && github.ref == 'refs/heads/arena/70f21d2d-ludocraft'
@@ -135,11 +136,15 @@ jobs:
               assert z.read(texture) == Path('src/main/resources', texture).read_bytes()
               assert len(json.loads(z.read(model))['elements']) == 241
               for item in ('vip_gamblers_pickaxe', 'highroller_pickaxe'):
-                  for resource in (
-                      f'assets/ludocraft/models/item/{item}.json',
-                      f'assets/ludocraft/textures/item/{item}_3d.png',
-                  ):
+                  model_path = f'assets/ludocraft/models/item/{item}.json'
+                  assert z.read(model_path) == Path('src/main/resources', model_path).read_bytes()
+                  premium_model = json.loads(z.read(model_path))
+                  for texture_id in premium_model['textures'].values():
+                      namespace, texture = texture_id.split(':', 1)
+                      resource = f'assets/{namespace}/textures/{texture}.png'
                       assert z.read(resource) == Path('src/main/resources', resource).read_bytes()
+                  icon = f'assets/ludocraft/textures/item/{item}_3d.png'
+                  assert z.read(icon) == Path('src/main/resources', icon).read_bytes()
               compat = 'assets/minecraft/punchy/compat/ludocraft_gamblers_pickaxe.json'
               assert z.read(compat) == Path('src/main/resources', compat).read_bytes()
               assert not any(n.startswith('punchy/') or n.endswith('.jar') for n in z.namelist())
@@ -212,19 +217,17 @@ jobs:
           test -s "release/$preset"
           (cd release && sha256sum "$jar" "$preset" > SHA256SUMS.txt)
           cat > release/notes.md <<'NOTES'
-          ## LudoCraft 1.6.0 — Premium gambling pickaxes
+          ## LudoCraft ${VERSION} — refined premium pickaxe models
 
           **Minecraft Java 1.21.1 · NeoForge 21.1.265 · Java 21**
 
-          Adds two ore-only gambling pickaxes:
-          - **VIP Gambler’s Pickaxe** (`ludocraft:vip_gamblers_pickaxe`): netherite durability and mining properties, fire resistant; 75% no drops/XP, 25% item drops ×3, ×4, ×5, ×6, ×7, ×8, or ×10.
-          - **Highroller Pickaxe** (`ludocraft:highroller_pickaxe`): 4096 durability, mining speed 12, bonus attack, enchantability 22, fire resistant, Epic rarity; 65% no drops/XP, 35% item drops ×5, ×8, ×10, ×12, ×15, or ×20. Wins produce six visual firework bursts; a ×15 win awards the Mega Jackpot challenge.
+          Reworked the VIP and Highroller 3D models to read as hooked, sharp pickaxes rather than blocky hammers: compact centered slot-machine heads, long stepped blades that curve down to narrow tips, proportional per-face UVs, and unchanged first-/third-person item transforms. VIP keeps its green 777 panel; Highroller keeps its compact crown and three no-shade slot drums. Real first-person screenshots from the vanilla NeoForge client are included in the repository previews.
 
-          VIP recipe: smithing-transform the Gambler’s Pickaxe with a Netherite Upgrade Smithing Template and Netherite Ingot. Highroller recipe uses the DND / EPE / B B pattern with Diamonds, Netherite Ingots, Emeralds, the VIP pickaxe, and Blaze Rods. Crafting advancements and bilingual English/Russian tooltips are included.
+          Their mechanics are unchanged: VIP has netherite tool properties and is fire resistant (75% loss, otherwise drops ×3, ×4, ×5, ×6, ×7, ×8, or ×10); Highroller is fire resistant, Epic, durability 4096, mining speed 12, attack bonus and enchantability 22 (65% loss, otherwise drops ×5, ×8, ×10, ×12, ×15, or ×20). Its ×15 win awards Mega Jackpot and successful wins make six visual firework bursts.
 
           Install `ludocraft-${VERSION}.jar` in the `mods` folder on the client and server. The optional FTB Evolution 1.47.0 datapack ZIP is a separate download and is not required for the mod.
 
-          CI on this release runs the vanilla build, GameTests, Evolution preset tests, and client model checks. The optional Punchy compatibility job is skipped for this run; Punchy compatibility was not tested as part of this release.
+          CI on this release runs the vanilla build, GameTests, Evolution preset tests, baked-model checks, and real first-person client captures of both premium pickaxes. The optional Punchy compatibility job is skipped for this run; Punchy compatibility was not tested as part of this release.
           NOTES
           gh release create "$tag" "release/$jar" "release/$preset" release/SHA256SUMS.txt \
             --repo "$GH_REPO" --target "$GITHUB_SHA" \

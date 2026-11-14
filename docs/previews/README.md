@@ -7,6 +7,17 @@
 исходного кода, не подключена к Gradle source sets и не попадает в модовый JAR.
 Готовые `.jar` по-прежнему публикуются в [Releases](https://github.com/nightmare-huy/LudoCraft-/releases).
 
+## Версия 1.7.0 — обновлённые модели VIP и Highroller
+
+**Тип изображений: реальные кадры первого лица из CI, vanilla NeoForge 1.21.1 без Punchy.**
+
+| VIP Gambler’s Pickaxe | Highroller Pickaxe |
+| --- | --- |
+| ![VIP в игре](v1.7.0/vanilla/vip-firstperson.png) | ![Highroller в игре](v1.7.0/vanilla/highroller-firstperson.png) |
+
+- [Обе кирки, реальные кадры и ограничения проверки](v1.7.0/vanilla/README.md)
+- [Релиз 1.7.0](https://github.com/nightmare-huy/LudoCraft-/releases/tag/v1.7.0)
+
 ## Версия 1.5.5 — дополнительный сдвиг рукояти к ладони
 
 **Тип изображений: реальные игровые кадры с Punchy 3.2b, автоматизированный клиент.**

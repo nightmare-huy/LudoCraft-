@@ -6,6 +6,20 @@
 **[Готовые JAR в Releases](https://github.com/nightmare-huy/LudoCraft-/releases)** ·
 **[Внешний вид и превью по версиям](docs/previews/README.md)**
 
+## 1.7.0 — хищные силуэты VIP и Highroller
+
+Обе премиальные кирки получили новые 3D-модели: компактные центральные барабаны, длинные ступенчато сужающиеся лезвия, изогнутые вниз к острым кончикам. У VIP сохранено табло 777, у Highroller — корона и три барабана. UV-развёртки соразмерны геометрии; для светящихся деталей задано `shade: false`. Подгонка вьюмоделей от первого и третьего лица и игровая механика не изменены.
+
+**Реальные кадры из CI, первый вид, vanilla Minecraft 1.21.1 без Punchy:**
+
+| VIP Gambler’s Pickaxe | Highroller Pickaxe |
+| --- | --- |
+| ![VIP Gambler’s Pickaxe в игре](docs/previews/v1.7.0/vanilla/vip-firstperson.png) | ![Highroller Pickaxe в игре](docs/previews/v1.7.0/vanilla/highroller-firstperson.png) |
+
+**[Скачать JAR 1.7.0](https://github.com/nightmare-huy/LudoCraft-/releases/download/v1.7.0/ludocraft-1.7.0.jar)** ·
+**[Все файлы релиза](https://github.com/nightmare-huy/LudoCraft-/releases/tag/v1.7.0)** ·
+**[Проверка CI и кадры](https://github.com/nightmare-huy/LudoCraft-/actions)**
+
 ## 1.6.0 — VIP и Highroller
 
 Добавлены две огнестойкие кирки для добычи руд:
