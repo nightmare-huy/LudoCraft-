@@ -20,6 +20,8 @@ import net.neoforged.neoforge.registries.DeferredItem;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import ru.ludocraft.gameplay.OreGambling;
 import ru.ludocraft.item.GamblersPickaxeItem;
+import ru.ludocraft.item.VipGamblersPickaxeItem;
+import ru.ludocraft.item.HighrollerPickaxeItem;
 import ru.ludocraft.network.SelectLudkaTarget;
 
 @Mod(LudoCraft.MOD_ID)
@@ -37,6 +39,10 @@ public final class LudoCraft {
 
     public static final DeferredItem<GamblersPickaxeItem> GAMBLERS_PICKAXE =
             ITEMS.registerItem("gamblers_pickaxe", GamblersPickaxeItem::new);
+    public static final DeferredItem<VipGamblersPickaxeItem> VIP_GAMBLERS_PICKAXE =
+            ITEMS.registerItem("vip_gamblers_pickaxe", VipGamblersPickaxeItem::new);
+    public static final DeferredItem<HighrollerPickaxeItem> HIGHROLLER_PICKAXE =
+            ITEMS.registerItem("highroller_pickaxe", HighrollerPickaxeItem::new);
     public static final DeferredHolder<SoundEvent, SoundEvent> JACKPOT_SOUND =
             SOUNDS.register("jackpot_777", () -> SoundEvent.createVariableRangeEvent(id("jackpot_777")));
     public static final DeferredHolder<ParticleType<?>, SimpleParticleType> CONFETTI =
@@ -62,6 +68,8 @@ public final class LudoCraft {
     private void addCreativeItems(BuildCreativeModeTabContentsEvent event) {
         if (event.getTabKey() == CreativeModeTabs.TOOLS_AND_UTILITIES) {
             event.accept(GAMBLERS_PICKAXE);
+            event.accept(VIP_GAMBLERS_PICKAXE);
+            event.accept(HIGHROLLER_PICKAXE);
             event.accept(POCKET_LUDKA);
         }
     }

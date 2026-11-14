@@ -1,6 +1,6 @@
 {
   "item.ludocraft.gamblers_pickaxe": "Gambler's Pickaxe",
-  "message.ludocraft.loss": "Loser!",
+  "message.ludocraft.loss": "Unlucky!",
   "message.ludocraft.jackpot": "777! Jackpot! Drops ×%s!",
   "tooltip.ludocraft.ore_only": "Gambling only applies to ores.",
   "tooltip.ludocraft.loss": "85%: no drops or experience.",
@@ -18,7 +18,7 @@
   "screen.ludocraft.waiting": "Waiting for server…",
   "screen.ludocraft.spinning": "Spinning…",
   "screen.ludocraft.win": "WIN! %s",
-  "screen.ludocraft.loss": "BURNED! %s",
+  "screen.ludocraft.loss": "No luck! %s",
   "screen.ludocraft.one_item": "1 item per attempt",
   "screen.ludocraft.chance": "Chance: %s",
   "screen.ludocraft.unsupported": "Item is blocked",
@@ -46,5 +46,20 @@
   "screen.ludocraft.default_prize": "Prize: default item, without the wager’s data.",
   "screen.ludocraft.contents_warning": "Stored contents, charge and upgrades add no value and are lost with the wager, even on a win. Do not wager filled cells or containers!",
   "screen.ludocraft.evolution_title": "LUDKA · EVOLUTION 1.47.0",
-  "screen.ludocraft.evolution_warning": "Evolution: unreviewed mod items wager at most 32, prizes cost at least 512. Progression components, hidden items and ores cannot be prizes. Wager contents are lost even on a win!"
+  "screen.ludocraft.evolution_warning": "Evolution: unreviewed mod items wager at most 32, prizes cost at least 512. Progression components, hidden items and ores cannot be prizes. Wager contents are lost even on a win!",
+  "item.ludocraft.vip_gamblers_pickaxe": "VIP Gambler’s Pickaxe",
+  "item.ludocraft.highroller_pickaxe": "Highroller Pickaxe",
+  "message.ludocraft.vip_jackpot": "VIP jackpot! Drops ×%s!",
+  "message.ludocraft.highroller_jackpot": "Highroller jackpot! Drops ×%s!",
+  "tooltip.ludocraft.vip_loss": "75%: no drops or experience.",
+  "tooltip.ludocraft.vip_jackpot": "25%: drops ×3, ×4, ×5, ×6, ×7, ×8, or ×10.",
+  "tooltip.ludocraft.highroller_loss": "65%: no drops or experience.",
+  "tooltip.ludocraft.highroller_jackpot": "35%: drops ×5, ×8, ×10, ×12, ×15, or ×20.",
+  "tooltip.ludocraft.mega_jackpot": "A ×15 win earns the Mega Jackpot advancement.",
+  "advancements.ludocraft.highroller.title": "High Stakes",
+  "advancements.ludocraft.highroller.description": "Craft the Highroller Pickaxe.",
+  "advancements.ludocraft.mega_jackpot.title": "Mega Jackpot",
+  "advancements.ludocraft.mega_jackpot.description": "Win ×15 drops with the Highroller Pickaxe.",
+  "advancements.ludocraft.vip.title": "VIP Status",
+  "advancements.ludocraft.vip.description": "Upgrade a Gambler’s Pickaxe into the VIP model."
 }

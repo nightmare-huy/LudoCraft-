@@ -1,6 +1,8 @@
 {
   "replace": false,
   "values": [
-    "ludocraft:gamblers_pickaxe"
+    "ludocraft:gamblers_pickaxe",
+    "ludocraft:vip_gamblers_pickaxe",
+    "ludocraft:highroller_pickaxe"
   ]
 }

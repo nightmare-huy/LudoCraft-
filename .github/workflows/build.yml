@@ -1,5 +1,14 @@
 name: Build and release
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      run_punchy:
+        description: Run the optional Punchy compatibility job
+        required: false
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
@@ -31,6 +40,7 @@ jobs:
           python3 -m venv .model-tools
           .model-tools/bin/pip install Pillow==13.0.0
           .model-tools/bin/python tools/check_pickaxe_model.py
+          .model-tools/bin/python tools/check_premium_pickaxes.py
           .model-tools/bin/python tools/check_punchy_compat.py
           .model-tools/bin/python tools/check_punchy_reference.py
       - name: Build and test
@@ -105,6 +115,12 @@ jobs:
               assert z.read(model) == Path('src/main/resources', model).read_bytes()
               assert z.read(texture) == Path('src/main/resources', texture).read_bytes()
               assert len(json.loads(z.read(model))['elements']) == 241
+              for item in ('vip_gamblers_pickaxe', 'highroller_pickaxe'):
+                  for resource in (
+                      f'assets/ludocraft/models/item/{item}.json',
+                      f'assets/ludocraft/textures/item/{item}_3d.png',
+                  ):
+                      assert z.read(resource) == Path('src/main/resources', resource).read_bytes()
               compat = 'assets/minecraft/punchy/compat/ludocraft_gamblers_pickaxe.json'
               assert z.read(compat) == Path('src/main/resources', compat).read_bytes()
               assert not any(n.startswith('punchy/') or n.endswith('.jar') for n in z.namelist())
@@ -130,6 +146,7 @@ jobs:
           if-no-files-found: error
 
   punchy:
+    if: github.event_name != 'workflow_dispatch' || inputs.run_punchy == true
     uses: ./.github/workflows/punchy.yml
     permissions:
       contents: write
@@ -138,6 +155,9 @@ jobs:
     needs: [build, punchy]
     # Never publish from pull requests or unrelated branches/forks.
     if: >-
+      always() &&
+      needs.build.result == 'success' &&
+      (needs.punchy.result == 'success' || needs.punchy.result == 'skipped') &&
       github.repository == 'nightmare-huy/LudoCraft-' &&
       github.event_name != 'pull_request' &&
       (github.ref == 'refs/heads/arena/70f21d2d-ludocraft' ||
@@ -173,34 +193,19 @@ jobs:
           test -s "release/$preset"
           (cd release && sha256sum "$jar" "$preset" > SHA256SUMS.txt)
           cat > release/notes.md <<'NOTES'
-          ## LudoCraft — Кирка Лудомании и Карманная Лудка
+          ## LudoCraft 1.6.0 — Premium gambling pickaxes
 
-          **Minecraft Java 1.21.1 · NeoForge 21.1.265+ для 1.21.1 · Java 21**
+          **Minecraft Java 1.21.1 · NeoForge 21.1.265 · Java 21**
 
-          Скачайте `ludocraft-*.jar` из Assets и положите его в папку `mods` клиента и сервера. Архивы Source code для установки не нужны.
+          Adds two ore-only gambling pickaxes:
+          - **VIP Gambler’s Pickaxe** (`ludocraft:vip_gamblers_pickaxe`): netherite durability and mining properties, fire resistant; 75% no drops/XP, 25% item drops ×3, ×4, ×5, ×6, ×7, ×8, or ×10.
+          - **Highroller Pickaxe** (`ludocraft:highroller_pickaxe`): 4096 durability, mining speed 12, bonus attack, enchantability 22, fire resistant, Epic rarity; 65% no drops/XP, 35% item drops ×5, ×8, ×10, ×12, ×15, or ×20. Wins produce six visual firework bursts; a ×15 win awards the Mega Jackpot challenge.
 
-          Получение: `/give @s ludocraft:gamblers_pickaxe` и `/give @s ludocraft:pocket_ludka`.
-          Проверяйте механику в выживании, не в творческом режиме.
+          VIP recipe: smithing-transform the Gambler’s Pickaxe with a Netherite Upgrade Smithing Template and Netherite Ingot. Highroller recipe uses the DND / EPE / B B pattern with Diamonds, Netherite Ingots, Emeralds, the VIP pickaxe, and Blaze Rods. Crafting advancements and bilingual English/Russian tooltips are included.
 
-          Алмазная кирка: 85% — без предметов и опыта, 15% — дроп ×2–×5, звук «777», конфетти и визуальные фейерверки.
+          Install `ludocraft-${VERSION}.jar` in the `mods` folder on the client and server. The optional FTB Evolution 1.47.0 datapack ZIP is a separate download and is not required for the mod.
 
-          Новое в 1.5.5: по просьбе пользователя Кирка Лудомании сдвинута ещё на 0,5 модельного пикселя вниз — глубже в ладонь. Поза 1.5.4 (угол алмазной кирки, 75% размера, сдвиг внутрь к ладони) сохранена. Проверено для обеих рук с Punchy 3.2b (NeoForge 1.21.1), стандартные настройки. Профиль остаётся item-only для ludocraft:gamblers_pickaxe. Модель/текстура и 241 quad, третье лицо, механика 85/15 и баланс не изменены. Punchy необязателен и не входит в JAR.
-
-          Проверено с точным punchy-3.2b-neoforge-1.21.1.jar (SHA-512), стандартный конфиг: фактическое совпадение Punchy profiles и baked first-person transforms с vanilla diamond pickaxe в обеих руках; игровой мир, взгляд вниз, F5, добыча камня в выживании и восстановление. Кадры: docs/previews/v1.5.5. Это автоматизированная сцена, не ручное прохождение полной сборки; пользовательские конфиги, шейдеры и все фазы анимаций не проверены.
-
-          Также пройдены обычный клиентский запуск без Punchy, тесты геометрии/текстур, 8+2 GameTests, чистые правила и проверка JAR. Релиз заблокирован при провале любого из двух клиентских запусков.
-
-          Карманная Лудка: опциональный консервативный профиль FTB Evolution 1.47.0. Обычный режим 1.4.0 сохранён, профиль НЕ включается автоматически.
-
-          Если профиль Evolution 1.5.0 уже установлен, оставьте его: повторный ZIP не нужен. Для новой установки профиля: ZIP `ludocraft-*-ftb-evolution-1.47.0.zip` целиком в `<мир>/datapacks/` (на сервере — в папку серверного мира), затем `/reload` и заново открыть Лудку. В заголовке появится EVOLUTION 1.47.0. ZIP не класть в mods и не распаковывать внутрь другого datapack.
-
-          Проверены официальные manifest 125/100598 и отдельные KubeJS-скрипты 1.47.0. FTB Materials и эквивалентные ресурсы оценены согласованно. Пример: алмаз 32, незерит 512, AE2 controller 2048, item cell 1k 640. Неоценённые модовые вещи: ставка не более 32, награда не менее 512; это намеренный разрыв, а не одинаковая цена покупки/ставки.
-
-          Защищённые цели: скрытые c:hidden_from_recipe_viewers, руды/сырьё, compressedblocks, непроверенные кастомные ftbevolution-предметы (кроме ruby_gem/xy_aluminum_dust), chaos-компоненты Draconic Evolution, антиматерия Mekanism и nucleosynthesizer, creative_* / *_creative. Как ставки они разрешены, если не запрещены общим blacklist. Профиль не отслеживает персональный прогресс и не гарантирует закрытие всех обходов рецептов. MEGACells упирается в потолок цены 32767.
-
-          Сервер выбирает исход, расходуется один предмет. Победа создаёт один стандартный экземпляр цели, не копируя содержимое/заряд ставки. Кирка 85/15 и трёхсекундная анимация не изменены.
-
-          CI: чистые тесты правил, обычный GameTest-сервер и отдельный GameTest-сервер с настоящим datapack-профилем. Полная FTB Evolution не запускается; клиентская проверка использует отдельный плоский мир с одним LudoCraft. Это первый экспериментальный баланс, не полный аудит экономики сборки. Документация: docs/balance/ftb-evolution-1.47.0.md.
+          CI on this release runs the vanilla build, GameTests, Evolution preset tests, and client model checks. The optional Punchy compatibility job is skipped for this run; Punchy compatibility was not tested as part of this release.
           NOTES
           gh release create "$tag" "release/$jar" "release/$preset" release/SHA256SUMS.txt \
             --repo "$GH_REPO" --target "$GITHUB_SHA" \
