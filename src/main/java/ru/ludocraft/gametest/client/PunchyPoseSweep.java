@@ -5,18 +5,20 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.Screenshot;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
+import net.minecraft.world.item.ItemDisplayContext;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
+import net.minecraft.client.resources.model.ModelResourceLocation;
 import ru.ludocraft.LudoCraft;
 
-/** Dev-only reference/anchor comparison, loading temporary packs through Punchy's real loader.
- * Does not modify the shipped compatibility resource. All test code is excluded from the JAR. */
+/** Dev-only comparison: use the actual vanilla diamond-pickaxe view transforms/profile as the candidate. */
 public final class PunchyPoseSweep {
-    private static final String[] CASES = {"vanilla-reference", "released", "compact", "proposed", "proposed-left", "proposed-down"};
+    private static final String[] CASES = {"vanilla-reference", "released", "match-diamond", "match-diamond-left", "match-diamond-down"};
     private static int phase, ticks;
     private static boolean loading, ready, capture;
-    private static com.google.gson.JsonObject baselineRight, baselineLeft;
+    private static com.google.gson.JsonObject diamondRight, diamondLeft, releasedRight, releasedLeft;
     private PunchyPoseSweep() {}
     public static boolean enabled() { return Boolean.getBoolean("ludocraft.punchySweep"); }
     public static void tick(Minecraft mc) {
@@ -29,28 +31,26 @@ public final class PunchyPoseSweep {
         if (!loading) {
             loading = true;
             try {
-                if (baselineRight == null) {
-                    // Snapshot the actual released item-specific profiles, never generic
-                    // Punchy pickaxe defaults from the diamond-reference phase.
-                    ItemStack held = mc.player.getMainHandItem().copy();
+                if (diamondRight == null) {
+                    mc.player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(Items.DIAMOND_PICKAXE));
+                    diamondRight = profile(mc, false);
+                    diamondLeft = profile(mc, true);
                     mc.player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(LudoCraft.GAMBLERS_PICKAXE.get()));
-                    baselineRight = profile(mc, false);
-                    baselineLeft = profile(mc, true);
-                    mc.player.setItemInHand(InteractionHand.MAIN_HAND, held);
+                    releasedRight = profile(mc, false);
+                    releasedLeft = profile(mc, true);
+                    var vanillaModel = mc.getModelManager().getModel(ModelResourceLocation.inventory(
+                            ResourceLocation.withDefaultNamespace("diamond_pickaxe")));
+                    var transforms = new com.google.gson.JsonObject();
+                    transforms.add("right", displayTransform(vanillaModel.getTransforms().getTransform(ItemDisplayContext.FIRST_PERSON_RIGHT_HAND)));
+                    transforms.add("left", displayTransform(vanillaModel.getTransforms().getTransform(ItemDisplayContext.FIRST_PERSON_LEFT_HAND)));
                     Files.createDirectories(Path.of("screenshots"));
                     Files.writeString(Path.of("screenshots", "punchy-grip-profiles.json"),
-                            "{\"releasedRight\":" + baselineRight + ",\"releasedLeft\":" + baselineLeft + "}\n");
+                            "{\"diamondRight\":" + diamondRight + ",\"diamondLeft\":" + diamondLeft +
+                                    ",\"releasedRight\":" + releasedRight + ",\"releasedLeft\":" + releasedLeft +
+                                    ",\"diamondItemDisplay\":" + transforms + "}\n");
                 }
-                var right = baselineRight.deepCopy();
-                var left = baselineLeft.deepCopy();
-                if (phase >= 2) {
-                    for (var pose : new com.google.gson.JsonObject[]{right, left}) {
-                        pose.addProperty("scale", phase == 2 ? .9F : 1.15F);
-                        pose.addProperty("offZ", .35F);
-                    }
-                    right.addProperty("offX", -.08F);
-                    left.addProperty("offX", .08F);
-                }
+                var right = (phase >= 2 ? diamondRight : releasedRight).deepCopy();
+                var left = (phase >= 2 ? diamondLeft : releasedLeft).deepCopy();
                 var sides = new com.google.gson.JsonObject(); sides.add("right", right); sides.add("left", left);
                 var entry = new com.google.gson.JsonObject(); entry.addProperty("kind", "PICKAXE"); entry.add("transforms", sides);
                 var specifics = new com.google.gson.JsonObject(); specifics.add("ludocraft:gamblers_pickaxe", entry);
@@ -58,7 +58,7 @@ public final class PunchyPoseSweep {
                 Path root = Path.of("resourcepacks", "ludka-punchy-candidate-" + CASES[phase]);
                 Path path = root.resolve("assets/minecraft/punchy/compat/ludocraft_candidate.json");
                 Files.createDirectories(path.getParent());
-                Files.writeString(root.resolve("pack.mcmeta"), "{\"pack\":{\"pack_format\":34,\"description\":\"LudoCraft dev-only grip comparison\"}}");
+                Files.writeString(root.resolve("pack.mcmeta"), "{\"pack\":{\"pack_format\":34,\"description\":\"LudoCraft diamond-pickaxe pose comparison\"}}");
                 Files.writeString(path, json.toString());
             } catch (ReflectiveOperationException | java.io.IOException failure) { throw new RuntimeException(failure); }
             var repository = mc.getResourcePackRepository();
@@ -69,10 +69,36 @@ public final class PunchyPoseSweep {
             if (repository.getPack(selected) == null) throw new AssertionError("Missing candidate pack " + selected);
             ids.add(selected);
             repository.setSelected(ids);
-            mc.player.setItemInHand(InteractionHand.MAIN_HAND, new ItemStack(phase == 0 ? Items.DIAMOND_PICKAXE : LudoCraft.GAMBLERS_PICKAXE.get()));
-            mc.reloadResourcePacks().thenRun(() -> mc.execute(() -> ready = true));
+            boolean candidate = phase >= 2;
+            mc.player.setItemInHand(InteractionHand.MAIN_HAND,
+                    new ItemStack(phase == 0 ? Items.DIAMOND_PICKAXE : LudoCraft.GAMBLERS_PICKAXE.get()));
+            mc.reloadResourcePacks().thenRun(() -> mc.execute(() -> {
+                if (candidate) copyDiamondViewTransforms(mc);
+                ready = true;
+            }));
         }
         if (ready && ++ticks == 80) capture = true;
+    }
+    private static com.google.gson.JsonObject displayTransform(net.minecraft.client.renderer.block.model.ItemTransform transform) {
+        var result = new com.google.gson.JsonObject();
+        result.add("rotation", vector(transform.rotation));
+        result.add("translation", vector(transform.translation));
+        result.add("scale", vector(transform.scale));
+        return result;
+    }
+    private static com.google.gson.JsonArray vector(org.joml.Vector3f value) {
+        var result = new com.google.gson.JsonArray();
+        result.add(value.x); result.add(value.y); result.add(value.z);
+        return result;
+    }
+    private static void copyDiamondViewTransforms(Minecraft mc) {
+        var custom = mc.getModelManager().getModel(ModelResourceLocation.inventory(LudoCraft.id("gamblers_pickaxe")));
+        var vanilla = mc.getModelManager().getModel(ModelResourceLocation.inventory(ResourceLocation.withDefaultNamespace("diamond_pickaxe")));
+        for (var context : new ItemDisplayContext[]{ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, ItemDisplayContext.FIRST_PERSON_LEFT_HAND}) {
+            var from = vanilla.getTransforms().getTransform(context);
+            var to = custom.getTransforms().getTransform(context);
+            to.rotation.set(from.rotation); to.translation.set(from.translation); to.scale.set(from.scale);
+        }
     }
     @SuppressWarnings({"unchecked", "rawtypes"})
     private static com.google.gson.JsonObject profile(Minecraft mc, boolean left) throws ReflectiveOperationException {
@@ -81,9 +107,8 @@ public final class PunchyPoseSweep {
         Object profile = Class.forName("punchy.client.render.ToolTuning").getMethod("resolveProfile",
                 ItemStack.class, kind, boolean.class).invoke(null, mc.player.getMainHandItem(), pickaxe, left);
         var json = new com.google.gson.JsonObject();
-        for (String field : new String[]{"scale", "offX", "offY", "offZ", "rotX", "rotY", "rotZ", "pivotX", "pivotY", "pivotZ"}) {
+        for (String field : new String[]{"scale", "offX", "offY", "offZ", "rotX", "rotY", "rotZ", "pivotX", "pivotY", "pivotZ"})
             json.addProperty(field, profile.getClass().getField(field).getFloat(profile));
-        }
         return json;
     }
     public static void verifyLoadedCompatibility(Minecraft mc) throws Exception {
@@ -97,10 +122,8 @@ public final class PunchyPoseSweep {
         for (boolean left : new boolean[]{false, true}) {
             var actual = profile(mc, left);
             var pose = expected.getAsJsonObject(left ? "left" : "right");
-            for (String key : pose.keySet()) {
-                if (Math.abs(pose.get(key).getAsFloat() - actual.get(key).getAsFloat()) > .0001F)
-                    throw new AssertionError("Punchy did not apply shipped " + key + ": " + actual);
-            }
+            for (String key : pose.keySet()) if (Math.abs(pose.get(key).getAsFloat() - actual.get(key).getAsFloat()) > .0001F)
+                throw new AssertionError("Punchy did not apply shipped " + key + ": " + actual);
         }
         var method = Class.forName("punchy.client.render.ToolTuning").getMethod("hasSpecificProfile", ItemStack.class);
         if (!(Boolean) method.invoke(null, mc.player.getMainHandItem()) || (Boolean) method.invoke(null, new ItemStack(Items.DIAMOND_PICKAXE)))
@@ -117,7 +140,7 @@ public final class PunchyPoseSweep {
         try (var image = Screenshot.takeScreenshot(mc.getMainRenderTarget())) { image.writeToFile(path); }
         phase++; ticks = 0; loading = false; ready = false;
         if (phase == CASES.length) {
-            System.out.println("PUNCHY_SWEEP_PASS: vanilla reference and grip anchor probes captured; no visual approval implied");
+            System.out.println("PUNCHY_SWEEP_PASS: exact diamond-pickaxe pose and model-transform reference captured; not a release");
             mc.stop();
         }
     }
