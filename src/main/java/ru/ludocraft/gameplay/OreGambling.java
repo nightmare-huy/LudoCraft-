@@ -7,6 +7,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.entity.item.ItemEntity;
 import net.minecraft.world.entity.player.Player;
@@ -98,11 +99,11 @@ public final class OreGambling {
                 highroller ? 0.65 : 0.35, highroller ? 0.38 : 0.25);
         // Each client-side emitter makes three vanilla-rendered explosions; two emitters create six.
         level.sendParticles(LudoCraft.JACKPOT_FIREWORK.get(), x, y, z, highroller ? 2 : 1, 0, 0, 0, 0);
-        if (highroller && multiplier == 15) {
+        if (highroller && multiplier == 15 && player instanceof ServerPlayer serverPlayer) {
             var advancement = level.getServer().getAdvancements()
                     .get(ResourceLocation.fromNamespaceAndPath(LudoCraft.MOD_ID, "gameplay/mega_jackpot"));
             if (advancement != null) {
-                player.getAdvancements().award(advancement, "mega_jackpot");
+                serverPlayer.getAdvancements().award(advancement, "mega_jackpot");
             }
         }
     }
