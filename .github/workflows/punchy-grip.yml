@@ -1,10 +1,5 @@
 name: Punchy grip review (no release)
 on:
-  push:
-    branches: [arena/70f21d2d-ludocraft]
-    paths:
-      - 'src/main/java/ru/ludocraft/gametest/client/PunchyPoseSweep.java'
-      - '.github/workflows/punchy-grip.yml'
   workflow_dispatch:
 permissions:
   contents: write

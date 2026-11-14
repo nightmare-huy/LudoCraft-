@@ -43,6 +43,20 @@ jobs:
           grep -Fq 'PUNCHY_COMPAT_PASS:' punchy-client.log
           test "$(find run/punchy-smoke/screenshots -name 'punchy-*.png' | wc -l)" -eq 11
           .model-tools/bin/python tools/check_punchy_captures.py
+      - name: Preserve failed Punchy pose diagnostic
+        if: failure() && github.ref == 'refs/heads/arena/70f21d2d-ludocraft'
+        run: |
+          DIAG=run/punchy-smoke/screenshots/punchy-transform-diagnostic.json
+          if test -f "$DIAG"; then
+            cp "$DIAG" docs/previews/punchy-grip-review/punchy-transform-diagnostic.json
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add docs/previews/punchy-grip-review/punchy-transform-diagnostic.json
+            git commit -m 'Record Punchy pose comparison diagnostic [skip ci]'
+            git push origin HEAD:arena/70f21d2d-ludocraft
+          else
+            echo 'No runtime pose diagnostic was created.'
+          fi
       - name: Save versioned real-game evidence
         run: |
           VERSION=$(sed -n 's/^mod_version=//p' gradle.properties | tr -d '\r')

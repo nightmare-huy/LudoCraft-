@@ -119,6 +119,21 @@ public final class PunchyPoseSweep {
             expected = com.google.gson.JsonParser.parseReader(reader).getAsJsonObject()
                     .getAsJsonObject("itemSpecific").getAsJsonObject("ludocraft:gamblers_pickaxe").getAsJsonObject("transforms");
         }
+        var diagnostic = new com.google.gson.JsonObject();
+        diagnostic.add("resolvedPunchyRight", profile(mc, false));
+        diagnostic.add("resolvedPunchyLeft", profile(mc, true));
+        var customModel = mc.getModelManager().getModel(ModelResourceLocation.inventory(LudoCraft.id("gamblers_pickaxe")));
+        var vanillaModel = mc.getModelManager().getModel(ModelResourceLocation.inventory(ResourceLocation.withDefaultNamespace("diamond_pickaxe")));
+        var customDisplay = new com.google.gson.JsonObject();
+        var vanillaDisplay = new com.google.gson.JsonObject();
+        for (var context : new ItemDisplayContext[]{ItemDisplayContext.FIRST_PERSON_RIGHT_HAND, ItemDisplayContext.FIRST_PERSON_LEFT_HAND}) {
+            customDisplay.add(context.name(), displayTransform(customModel.getTransforms().getTransform(context)));
+            vanillaDisplay.add(context.name(), displayTransform(vanillaModel.getTransforms().getTransform(context)));
+        }
+        diagnostic.add("customDisplay", customDisplay);
+        diagnostic.add("vanillaDisplay", vanillaDisplay);
+        Files.createDirectories(Path.of("screenshots"));
+        Files.writeString(Path.of("screenshots", "punchy-transform-diagnostic.json"), diagnostic.toString());
         for (boolean left : new boolean[]{false, true}) {
             var actual = profile(mc, left);
             var pose = expected.getAsJsonObject(left ? "left" : "right");
