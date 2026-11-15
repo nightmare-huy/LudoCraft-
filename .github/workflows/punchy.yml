@@ -1,0 +1,115 @@
+name: Punchy 3.2b compatibility
+on:
+  workflow_call:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  inspect:
+    if: github.ref == 'refs/heads/arena/70f21d2d-ludocraft'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      LIBGL_ALWAYS_SOFTWARE: 'true'
+      ALSOFT_DRIVERS: 'null'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Fetch exact optional runtime
+        run: python3 tools/fetch_punchy.py
+      - name: Image validation tools
+        run: |
+          python3 -m venv .model-tools
+          .model-tools/bin/pip install Pillow==13.0.0
+      - name: Capture actual client with Punchy defaults
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libxi6 libxrender1 libxtst6
+          if ! timeout 480s xvfb-run -a -s '-screen 0 1280x720x24' ./gradlew runPunchySmokeClient --no-daemon > punchy-client.log 2>&1; then
+            tail -100 punchy-client.log
+            while IFS= read -r line; do
+              line="${line//'%'/'%25'}"
+              echo "::error::$line"
+            done < <(tail -45 punchy-client.log)
+            exit 1
+          fi
+          grep -Fq 'PUNCHY_RUNTIME_CONFIRMED: 3.2b' punchy-client.log
+          grep -Fq 'HAND_POSE_WORLD_PASS:' punchy-client.log
+          grep -Fq 'PUNCHY_MINING_PASS:' punchy-client.log
+          grep -Fq 'PUNCHY_COMPAT_PASS:' punchy-client.log
+          test "$(find run/punchy-smoke/screenshots -name 'punchy-*.png' | wc -l)" -eq 11
+          .model-tools/bin/python tools/check_punchy_captures.py
+      - name: Detect whether this version is already released
+        id: published
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(sed -n 's/^mod_version=//p' gradle.properties | tr -d '\r')
+          if gh release view "v${VERSION}" >/dev/null 2>&1; then
+            echo 'exists=true' >> "$GITHUB_OUTPUT"
+          else
+            echo 'exists=false' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Preserve failed Punchy pose diagnostic
+        if: failure() && github.ref == 'refs/heads/arena/70f21d2d-ludocraft'
+        run: |
+          DIAG=run/punchy-smoke/screenshots/punchy-transform-diagnostic.json
+          if test -f "$DIAG"; then
+            cp "$DIAG" docs/previews/punchy-grip-review/punchy-transform-diagnostic.json
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add docs/previews/punchy-grip-review/punchy-transform-diagnostic.json
+            git commit -m 'Record Punchy pose comparison diagnostic [skip ci]'
+            git fetch origin arena/70f21d2d-ludocraft
+            git rebase origin/arena/70f21d2d-ludocraft
+            git push origin HEAD:arena/70f21d2d-ludocraft
+          else
+            echo 'No runtime pose diagnostic was created.'
+          fi
+      - name: Save versioned real-game evidence
+        if: success() && steps.published.outputs.exists != 'true'
+        run: |
+          VERSION=$(sed -n 's/^mod_version=//p' gradle.properties | tr -d '\r')
+          PREVIEW="docs/previews/v${VERSION}"
+          mkdir -p "$PREVIEW/punchy"
+          cp run/punchy-smoke/screenshots/punchy-*.png "$PREVIEW/punchy/"
+          python3 - <<'PY'
+          import json, os
+          from pathlib import Path
+          version = Path('gradle.properties').read_text().split('mod_version=',1)[1].splitlines()[0].strip()
+          preview = Path(f'docs/previews/v{version}/punchy')
+          (preview/'capture.json').write_text(json.dumps({
+              'source_commit': os.environ['GITHUB_SHA'],
+              'run_url': f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
+              'runtime': 'Minecraft 1.21.1, NeoForge 21.1.265, Punchy 3.2b, fresh default config',
+              'status': 'Automated game captures; visual review is separate',
+              'mode': 'survival: both hands, idle, F5, attack-key mining and recovery'
+          }, indent=2) + chr(10))
+          PY
+          .model-tools/bin/python tools/render_punchy_comparison.py "$VERSION"
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$PREVIEW/punchy" "$PREVIEW/punchy-comparison.png"
+          if git diff --cached --quiet; then
+            echo 'Versioned Punchy evidence is already up to date.'
+            exit 0
+          fi
+          git commit -m "Record Punchy 3.2b game evidence for $VERSION [skip ci]"
+          git fetch origin arena/70f21d2d-ludocraft
+          git rebase origin/arena/70f21d2d-ludocraft
+          git push origin HEAD:arena/70f21d2d-ludocraft || {
+            git fetch origin arena/70f21d2d-ludocraft
+            git rebase origin/arena/70f21d2d-ludocraft
+            git push origin HEAD:arena/70f21d2d-ludocraft
+          }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: punchy-3.2b-hand-captures
+          path: run/punchy-smoke/screenshots/punchy-*.png
+          if-no-files-found: warn

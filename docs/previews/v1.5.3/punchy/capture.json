@@ -1,0 +1,7 @@
+{
+  "source_commit": "8105286eff3ac21b2697e0b738500c817064b7f4",
+  "run_url": "https://github.com/nightmare-huy/LudoCraft-/actions/runs/43576611918",
+  "runtime": "Minecraft 1.21.1, NeoForge 21.1.265, Punchy 3.2b, fresh default config",
+  "status": "automated capture; visual review is separate",
+  "mode": "survival: idle, both hands, F5, attack key mining and recovery"
+}

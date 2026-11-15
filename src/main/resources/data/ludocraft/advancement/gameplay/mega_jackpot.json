@@ -1,0 +1,26 @@
+{
+  "parent": "minecraft:adventure/root",
+  "display": {
+    "icon": {
+      "id": "ludocraft:highroller_pickaxe"
+    },
+    "title": {
+      "translate": "advancements.ludocraft.mega_jackpot.title"
+    },
+    "description": {
+      "translate": "advancements.ludocraft.mega_jackpot.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  },
+  "criteria": {
+    "mega_jackpot": {
+      "trigger": "minecraft:impossible"
+    }
+  },
+  "rewards": {
+    "experience": 1000
+  }
+}

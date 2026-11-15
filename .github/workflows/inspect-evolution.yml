@@ -1,0 +1,44 @@
+name: Inspect Evolution balance sources
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Inspect official FTB Evolution 1.47.0 manifest
+        run: |
+          python3 - <<'PY'
+          import json, urllib.request
+          url = 'https://api.feed-the-beast.com/v1/modpacks/public/modpack/125/100598'
+          data = None
+          for endpoint in [url, url.replace('/public', ''), 'https://api.modpacks.ch/modpack/125/100598']:
+              try:
+                  req = urllib.request.Request(endpoint, headers={'User-Agent': 'Mozilla/5.0', 'Accept': 'application/json'})
+                  with urllib.request.urlopen(req, timeout=60) as response:
+                      data = json.load(response)
+                  assert data['name'] == '1.47.0' and data['parent'] == 125
+                  break
+              except Exception as e:
+                  print('::warning::FETCH ' + endpoint + ' ' + repr(e))
+                  data = None
+          assert data is not None, 'Official manifest unavailable'
+          print('::notice::TARGET ' + json.dumps(data['targets']))
+          mods = [f['name'] for f in data['files'] if f['name'].endswith('.jar')]
+          selected = [n for n in mods if any(w in n.lower() for w in ['ftb', 'allthe', 'mekanism', 'industrial', 'hostile', 'mystical', 'productive', 'draconic', 'ae2', 'extendedae', 'megacell', 'projecte'])]
+          print('::notice::MODS ' + json.dumps(selected))
+          sources = []
+          for f in data['files']:
+              path = f['path'] + '/' + f['name']
+              if ('server_scripts' in path or 'startup_scripts' in path) and f['name'].endswith('.js'):
+                  sources.append(path + ' ' + f['url'])
+          # GitHub caps annotations at ten per step and truncates long messages.
+          groups = ['']
+          for source in sources:
+              if len(groups[-1]) + len(source) > 3700:
+                  groups.append('')
+              groups[-1] += source + '\n'
+          for group in groups[:8]:
+              print('::notice::INDEX ' + group.replace('\n', '%0A'))
+          PY

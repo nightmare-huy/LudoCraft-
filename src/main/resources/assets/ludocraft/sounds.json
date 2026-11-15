@@ -1,0 +1,11 @@
+{
+  "jackpot_777": {
+    "subtitle": "subtitles.ludocraft.jackpot_777",
+    "sounds": [
+      {
+        "name": "ludocraft:jackpot_777",
+        "stream": false
+      }
+    ]
+  }
+}

@@ -1,0 +1,50 @@
+{
+  "parent": "minecraft:recipes/root",
+  "criteria": {
+    "has_ingredient": {
+      "trigger": "minecraft:inventory_changed",
+      "conditions": {
+        "items": [
+          {
+            "items": "ludocraft:vip_gamblers_pickaxe"
+          }
+        ]
+      }
+    },
+    "has_recipe": {
+      "trigger": "minecraft:recipe_unlocked",
+      "conditions": {
+        "recipe": "ludocraft:highroller_pickaxe"
+      }
+    }
+  },
+  "requirements": [
+    [
+      "has_ingredient"
+    ],
+    [
+      "has_recipe"
+    ]
+  ],
+  "rewards": {
+    "recipes": [
+      "ludocraft:highroller_pickaxe"
+    ],
+    "experience": 500
+  },
+  "display": {
+    "icon": {
+      "id": "ludocraft:highroller_pickaxe"
+    },
+    "title": {
+      "translate": "advancements.ludocraft.highroller.title"
+    },
+    "description": {
+      "translate": "advancements.ludocraft.highroller.description"
+    },
+    "frame": "challenge",
+    "show_toast": true,
+    "announce_to_chat": true,
+    "hidden": false
+  }
+}

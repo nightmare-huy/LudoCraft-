@@ -1,0 +1,58 @@
+name: Punchy grip review (no release)
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  review:
+    if: github.ref == 'refs/heads/arena/70f21d2d-ludocraft'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      LIBGL_ALWAYS_SOFTWARE: 'true'
+      ALSOFT_DRIVERS: 'null'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+      - run: python3 tools/fetch_punchy.py
+      - name: Capture reference and unpublished grip probes
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libxi6 libxrender1 libxtst6
+          if ! timeout 480s xvfb-run -a -s '-screen 0 1280x720x24' ./gradlew runPunchySmokeClient -PpunchySweep=true --no-daemon > grip-client.log 2>&1; then
+            while IFS= read -r line; do
+              line="${line//'%'/'%25'}"
+              echo "::error::$line"
+            done < <(tail -45 grip-client.log)
+            exit 1
+          fi
+          grep -Fq 'PUNCHY_RUNTIME_CONFIRMED: 3.2b' grip-client.log
+          grep -Fq 'PUNCHY_SWEEP_PASS:' grip-client.log
+      - name: Save review frames only
+        run: |
+          mkdir -p docs/previews/punchy-grip-review
+          cp run/punchy-smoke/screenshots/punchy-grip-*.png docs/previews/punchy-grip-review/
+          cp run/punchy-smoke/screenshots/punchy-grip-profiles.json docs/previews/punchy-grip-review/
+          python3 -m venv .preview-tools
+          .preview-tools/bin/pip install Pillow==13.0.0
+          .preview-tools/bin/python tools/render_grip_review.py
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          Path('docs/previews/punchy-grip-review/capture.json').write_text(json.dumps({
+              'source_commit': os.environ['GITHUB_SHA'],
+              'run_url': f"https://github.com/{os.environ['GITHUB_REPOSITORY']}/actions/runs/{os.environ['GITHUB_RUN_ID']}",
+              'runtime': 'Minecraft 1.21.1, NeoForge 21.1.265, Punchy 3.2b defaults',
+              'status': 'Unpublished development probes, awaiting visual review; not a release',
+              'scope': 'Only temporary test resource packs; shipped model and compatibility JSON unchanged'
+          },indent=2)+'\n')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add docs/previews/punchy-grip-review
+          git commit -m 'Save unpublished Punchy grip reference comparison [skip ci]'
+          git push origin HEAD:arena/70f21d2d-ludocraft

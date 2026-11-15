@@ -1,0 +1,121 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.148'
+    id 'idea'
+}
+
+version = mod_version
+group = mod_group_id
+base { archivesName = mod_id }
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+repositories { mavenCentral() }
+
+neoForge {
+    version = project.neo_version
+    runs {
+        client { client() }
+        gameTestServer {
+            type = 'gameTestServer'
+            systemProperty 'neoforge.enabledGameTestNamespaces', project.mod_id
+        }
+        server {
+            server()
+            programArgument '--nogui'
+        }
+    }
+    mods {
+        "${mod_id}" { sourceSet(sourceSets.main) }
+    }
+}
+
+// Dependency-free executable tests can also be run with plain javac/java.
+tasks.register('ruleTest', JavaExec) {
+    dependsOn tasks.named('testClasses')
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'ru.ludocraft.gameplay.GamblingRulesTest'
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+}
+tasks.named('check') { dependsOn tasks.named('ruleTest') }
+// Tests below have their own main entry point, not a JUnit test engine.
+tasks.named('test') { enabled = false }
+
+var generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+    var properties = [
+        minecraft_version_range: minecraft_version_range,
+        neo_version: neo_version,
+        loader_version_range: loader_version_range,
+        mod_id: mod_id,
+        mod_name: mod_name,
+        mod_license: mod_license,
+        mod_version: mod_version
+    ]
+    inputs.properties properties
+    expand properties
+    from 'src/main/templates'
+    into 'build/generated/sources/modMetadata'
+}
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+tasks.withType(JavaCompile).configureEach { options.encoding = 'UTF-8' }
+idea.module { downloadSources = true }
+
+// Integration tests run from the development classpath, not in the distributed mod.
+tasks.named('jar', Jar) {
+    exclude 'ru/ludocraft/gametest/**'
+    exclude 'data/ludocraft/structure/ludka_test.nbt'
+}
+
+// Exercise the opt-in preset in a separate world and test namespace.
+neoForge.runs {
+    evolutionGameTestServer {
+        type = 'gameTestServer'
+        gameDirectory = project.file('run/evolution')
+        programArguments.addAll('--world', 'profile-test')
+        systemProperty 'neoforge.enabledGameTestNamespaces', 'ludocraft_evolution'
+    }
+}
+tasks.register('prepareEvolutionTestPacks', Copy) {
+    into 'run/evolution/profile-test/datapacks'
+    from('compat/ftb-evolution-1.47.0') { into 'ludocraft-evolution' }
+    from('src/test/evolution-fixture') { into 'ludocraft-test-overrides' }
+}
+tasks.matching { it.name == 'runEvolutionGameTestServer' }.configureEach {
+    dependsOn tasks.named('prepareEvolutionTestPacks')
+    mustRunAfter tasks.named('runGameTestServer')
+}
+tasks.named('jar', Jar) { exclude 'data/ludocraft_evolution/**' }
+tasks.register('evolutionPack', Zip) {
+    from 'compat/ftb-evolution-1.47.0'
+    archiveFileName = "ludocraft-${project.version}-ftb-evolution-1.47.0.zip"
+    destinationDirectory = layout.buildDirectory.dir('libs')
+}
+tasks.named('build') { dependsOn tasks.named('evolutionPack') }
+
+// Real client asset baking and deterministic world screenshots under Xvfb in CI.
+neoForge.runs {
+    modelSmokeClient {
+        client()
+        gameDirectory = project.file('run/model-smoke')
+        systemProperty 'ludocraft.modelSmokeTest', 'true'
+        systemProperty 'ludocraft.handPoseTest', 'true'
+        programArguments.addAll('--width', '960', '--height', '540')
+    }
+}
+
+// Isolated optional compatibility runtime; Punchy is downloaded by tools/fetch_punchy.py.
+// Never a compile dependency, never included in the distributed LudoCraft JAR.
+neoForge.runs {
+    punchySmokeClient {
+        client()
+        gameDirectory = project.file('run/punchy-smoke')
+        systemProperty 'ludocraft.modelSmokeTest', 'true'
+        systemProperty 'ludocraft.handPoseTest', 'true'
+        systemProperty 'ludocraft.punchyTest', 'true'
+        systemProperty 'ludocraft.punchySweep', providers.gradleProperty('punchySweep').getOrElse('false')
+        programArguments.addAll('--width', '960', '--height', '540')
+    }
+}

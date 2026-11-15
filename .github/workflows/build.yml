@@ -1,0 +1,265 @@
+name: Build and release
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+    inputs:
+      run_punchy:
+        description: Run the optional Punchy compatibility job
+        required: false
+        type: boolean
+        default: false
+permissions:
+  contents: read
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Read release version
+        id: version
+        shell: bash
+        run: |
+          version=$(sed -n 's/^mod_version=//p' gradle.properties | tr -d '\r')
+          [[ "$version" =~ ^[0-9]+\.[0-9]+\.[0-9]+([.-][0-9A-Za-z.-]+)?$ ]] || {
+            echo 'Invalid mod_version in gradle.properties' >&2
+            exit 1
+          }
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+      - name: Validate 3D model and textures
+        run: |
+          python3 -m venv .model-tools
+          .model-tools/bin/pip install Pillow==13.0.0
+          .model-tools/bin/python tools/check_pickaxe_model.py
+          .model-tools/bin/python tools/check_premium_pickaxes.py
+          .model-tools/bin/python tools/check_punchy_compat.py
+          .model-tools/bin/python tools/check_punchy_reference.py
+      - name: Build and test
+        shell: bash
+        run: |
+          if ! ./gradlew build runGameTestServer runEvolutionGameTestServer --no-daemon > build-output.log 2>&1; then
+            tail -80 build-output.log
+            grep -nE 'error:|symbol:|location:|Exception|FAILED|FAILURE|AssertionError|Missing .*completion|Could not|Invalid' build-output.log | tail -30 | while IFS= read -r line; do
+              line="${line//'%'/'%25'}"
+              echo "::error::Build diagnostic: $line"
+            done
+            while IFS= read -r line; do
+              line="${line//'%'/'%25'}"
+              echo "::error::$line"
+            done < <(tail -45 build-output.log)
+            exit 1
+          fi
+          cat build-output.log
+          # An early, clean server exit (e.g. missing EULA) is not a successful test run.
+          grep -Fq 'All 8 required tests passed' build-output.log || { echo '::error::Missing default GameTest completion'; exit 1; }
+          grep -Fq 'All 2 required tests passed' build-output.log || { echo '::error::Missing Evolution GameTest completion'; exit 1; }
+          grep -Fq 'PASS: Evolution 1.47.0' build-output.log || { echo '::error::Missing Evolution rule tests'; exit 1; }
+          echo '::notice::Verified: default 8/8, Evolution preset 2/2 GameTests, pure Evolution rule tests.'
+      - name: Inspect pickaxe in a real client world
+        timeout-minutes: 10
+        env:
+          LIBGL_ALWAYS_SOFTWARE: 'true'
+          ALSOFT_DRIVERS: 'null'
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y xvfb libgl1-mesa-dri libglx-mesa0 libxi6 libxrender1 libxtst6
+          if ! timeout 420s xvfb-run -a -s '-screen 0 1280x720x24' ./gradlew runModelSmokeClient --no-daemon > client-model-test.log 2>&1; then
+            tail -100 client-model-test.log
+            while IFS= read -r line; do
+              line="${line//'%'/'%25'}"
+              echo "::error::$line"
+            done < <(tail -45 client-model-test.log)
+            exit 1
+          fi
+          grep -Fq 'PICKAXE_MODEL_SMOKE_PASS:' client-model-test.log || { echo '::error::Client never confirmed model baking'; tail -80 client-model-test.log; exit 1; }
+          grep -Fq 'HAND_POSE_WORLD_PASS:' client-model-test.log || { echo '::error::World pose inspection did not complete'; tail -80 client-model-test.log; exit 1; }
+          test "$(find run/model-smoke/screenshots -name 'hand-*.png' | wc -l)" -eq 9
+          .model-tools/bin/python tools/check_hand_captures.py
+          test -s run/model-smoke/screenshots/hand-vip-firstperson.png
+          test -s run/model-smoke/screenshots/hand-highroller-firstperson.png
+          echo '::notice::Real client: 3D models baked; seven existing hand/pose captures and two premium-pickaxe first-person screenshots completed.'
+      - name: Preserve premium pickaxe in-game previews
+        if: success() && github.ref == 'refs/heads/arena/70f21d2d-ludocraft'
+        run: |
+          VERSION=$(sed -n 's/^mod_version=//p' gradle.properties | tr -d '\r')
+          DEST="docs/previews/v${VERSION}/vanilla"
+          mkdir -p "$DEST"
+          cp run/model-smoke/screenshots/hand-vip-firstperson.png "$DEST/vip-firstperson.png"
+          cp run/model-smoke/screenshots/hand-highroller-firstperson.png "$DEST/highroller-firstperson.png"
+          cat > "$DEST/README.md" <<PREVIEW
+          # LudoCraft ${VERSION} — actual vanilla-client views
+
+          Captured by the automated Minecraft 1.21.1 NeoForge client smoke world without Punchy. These are real first-person gameplay frames, not model renders. The scripted scene holds each registered pickaxe in the player's main hand; automated captures do not replace a manual visual review.
+          PREVIEW
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEST"
+          if git diff --cached --quiet; then
+            echo '::notice::Versioned vanilla previews are already up to date.'
+            exit 0
+          fi
+          git commit -m "Save ${VERSION} premium pickaxe in-game previews [skip ci]"
+          git fetch origin arena/70f21d2d-ludocraft
+          git rebase origin/arena/70f21d2d-ludocraft
+          git push origin HEAD:arena/70f21d2d-ludocraft || {
+            git fetch origin arena/70f21d2d-ludocraft
+            git rebase origin/arena/70f21d2d-ludocraft
+            git push origin HEAD:arena/70f21d2d-ludocraft
+          }
+      - name: Preserve failed vanilla client evidence for diagnosis
+        if: failure() && github.ref == 'refs/heads/arena/70f21d2d-ludocraft'
+        run: |
+          DEST=docs/previews/punchy-grip-review/vanilla-client-diagnostic
+          mkdir -p "$DEST"
+          if test -f client-model-test.log; then
+            grep -E 'PASS|FAIL|Assertion|Error|bounds|HAND_POSE|PICKAXE' client-model-test.log > "$DEST/client-summary.txt" || true
+          fi
+          if test -d run/model-smoke/screenshots; then
+            cp run/model-smoke/screenshots/hand-*.png "$DEST/" 2>/dev/null || true
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$DEST"
+          git commit -m 'Preserve failed vanilla pickaxe view captures for diagnosis [skip ci]' || exit 0
+          git fetch origin arena/70f21d2d-ludocraft
+          git rebase origin/arena/70f21d2d-ludocraft
+          git push origin HEAD:arena/70f21d2d-ludocraft
+      - name: Verify distributable contents
+        run: |
+          python3 - <<'PY'
+          import glob, json, zipfile
+          from pathlib import Path
+          jar = glob.glob('build/libs/ludocraft-*.jar')
+          assert len(jar) == 1
+          with zipfile.ZipFile(jar[0]) as z:
+              assert not any('/gametest/' in n or n.startswith('data/ludocraft_evolution/') for n in z.namelist())
+              gambling_path = 'data/ludocraft/enchantment/gambling.json'
+              gambling = json.loads(z.read(gambling_path))
+              assert gambling['supported_items'] == '#minecraft:pickaxes'
+              assert gambling['primary_items'] == '#minecraft:pickaxes'
+              assert gambling['max_level'] == 3
+              for tag in ('in_enchanting_table', 'on_random_loot', 'tradeable'):
+                  tag_path = f'data/minecraft/tags/enchantment/{tag}.json'
+                  assert 'ludocraft:gambling' in json.loads(z.read(tag_path))['values']
+              for language, name in (('en_us', 'Gambling'), ('ru_ru', 'Лудомания')):
+                  lang_path = f'assets/ludocraft/lang/{language}.json'
+                  assert json.loads(z.read(lang_path))['enchantment.ludocraft.gambling'] == name
+              marker = 'data/ludocraft/tags/item/balance/ftb_evolution_1_47_0.json'
+              assert json.loads(z.read(marker))['values'] == []
+              model = 'assets/ludocraft/models/item/gamblers_pickaxe.json'
+              texture = 'assets/ludocraft/textures/item/gamblers_pickaxe_3d.png'
+              assert z.read(model) == Path('src/main/resources', model).read_bytes()
+              assert z.read(texture) == Path('src/main/resources', texture).read_bytes()
+              assert len(json.loads(z.read(model))['elements']) == 241
+              for item in ('vip_gamblers_pickaxe', 'highroller_pickaxe'):
+                  model_path = f'assets/ludocraft/models/item/{item}.json'
+                  assert z.read(model_path) == Path('src/main/resources', model_path).read_bytes()
+                  premium_model = json.loads(z.read(model_path))
+                  for texture_id in premium_model['textures'].values():
+                      namespace, texture = texture_id.split(':', 1)
+                      resource = f'assets/{namespace}/textures/{texture}.png'
+                      assert z.read(resource) == Path('src/main/resources', resource).read_bytes()
+                  icon = f'assets/ludocraft/textures/item/{item}_3d.png'
+                  assert z.read(icon) == Path('src/main/resources', icon).read_bytes()
+              compat = 'assets/minecraft/punchy/compat/ludocraft_gamblers_pickaxe.json'
+              assert z.read(compat) == Path('src/main/resources', compat).read_bytes()
+              assert not any(n.startswith('punchy/') or n.endswith('.jar') for n in z.namelist())
+          pack = glob.glob('build/libs/*-ftb-evolution-1.47.0.zip')
+          assert len(pack) == 1
+          with zipfile.ZipFile(pack[0]) as z:
+              assert json.loads(z.read('pack.mcmeta'))['pack']['pack_format'] == 48
+              assert json.loads(z.read(marker))['values'] == ['ludocraft:pocket_ludka']
+              assert not any('test-overrides' in n or n.endswith('.class') for n in z.namelist())
+          print('::notice::Verified JAR opt-out marker, ZIP opt-in marker, format 48 and test-code exclusion.')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: vanilla-hand-captures
+          path: run/model-smoke/screenshots/hand-*.png
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ludocraft-1.21.1
+          path: |
+            build/libs/ludocraft-${{ steps.version.outputs.version }}.jar
+            build/libs/ludocraft-${{ steps.version.outputs.version }}-ftb-evolution-1.47.0.zip
+          if-no-files-found: error
+
+  punchy:
+    if: github.event_name != 'workflow_dispatch' || inputs.run_punchy == true
+    uses: ./.github/workflows/punchy.yml
+    permissions:
+      contents: write
+
+  release:
+    needs: [build, punchy]
+    # Never publish from pull requests or unrelated branches/forks.
+    if: >-
+      always() &&
+      needs.build.result == 'success' &&
+      (needs.punchy.result == 'success' || needs.punchy.result == 'skipped') &&
+      github.repository == 'nightmare-huy/LudoCraft-' &&
+      github.event_name != 'pull_request' &&
+      (github.ref == 'refs/heads/arena/70f21d2d-ludocraft' ||
+       github.ref_name == github.event.repository.default_branch)
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    concurrency:
+      group: ludocraft-releases
+      cancel-in-progress: false
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: ludocraft-1.21.1
+          path: release
+      - name: Publish versioned JAR to GitHub Releases
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          VERSION: ${{ needs.build.outputs.version }}
+        run: |
+          tag="v${VERSION}"
+          # A failed API request fails the job, rather than looking like a missing release.
+          tags=$(gh api "repos/$GH_REPO/releases" --paginate --jq '.[].tag_name')
+          if grep -Fxq -- "$tag" <<< "$tags"; then
+            echo "::notice::Release $tag already exists. Bump mod_version to publish another version; existing files will not be replaced."
+            exit 0
+          fi
+          jar="ludocraft-${VERSION}.jar"
+          test -s "release/$jar"
+          preset="ludocraft-${VERSION}-ftb-evolution-1.47.0.zip"
+          test -s "release/$preset"
+          (cd release && sha256sum "$jar" "$preset" > SHA256SUMS.txt)
+          cat > release/notes.md <<'NOTES'
+          ## LudoCraft ${VERSION} — Gambling enchantment and inventory fix
+
+          **Minecraft Java 1.21.1 · NeoForge 21.1.265 · Java 21**
+
+          Adds the data-driven **Gambling I–III** enchantment for vanilla and modded pickaxes in `#minecraft:pickaxes`. It is available from enchanting, librarian trades, random enchantment loot, and the creative enchanted-book inventory. Gambler’s, VIP Gambler’s, and Highroller pickaxes are explicitly excluded from both table and anvil application. This release fixes the inventory-open crash by relying on vanilla creative-tab generation for enchanted books instead of manually inserting a duplicate.
+
+          - I: 85% loss of ore drops and XP, otherwise drops ×2–×5.
+          - II: 75% loss, otherwise drops ×3–×8.
+          - III: 65% loss, otherwise mega-jackpot ×5, ×8, ×10, ×12, or ×15.
+
+          Losses show “Unlucky!”. Successful wins spawn confetti, play `jackpot_777`, and make one firework for levels I/II or a six-firework volley for level III. The existing premium pickaxe features and 3D models are retained.
+
+          Install `ludocraft-${VERSION}.jar` in the `mods` folder on the client and server. The optional FTB Evolution 1.47.0 datapack ZIP is a separate download and is not required for the mod.
+
+          CI on this release runs the vanilla build, GameTests, Evolution preset tests, baked-model checks, real first-person client captures, and the Punchy 3.2b compatibility test.
+          NOTES
+          python3 -c 'import os; from pathlib import Path; p=Path("release/notes.md"); p.write_text(p.read_text().replace("${VERSION}", os.environ["VERSION"]))'
+          gh release create "$tag" "release/$jar" "release/$preset" release/SHA256SUMS.txt \
+            --repo "$GH_REPO" --target "$GITHUB_SHA" \
+            --title "LudoCraft ${VERSION} — Minecraft 1.21.1" \
+            --notes-file release/notes.md
